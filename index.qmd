@@ -18,7 +18,7 @@ knitr::opts_chunk$set(echo=TRUE,
 
 ## Classification  et régionalisation
 
-Les géographes français qui sont confrontés à l'analyse d'un ensemble de variables décrivant un ensemble de lieux vont le plus souvent procéder à une analyse en deux étapes combinant analyse factorielle et classification ascendante hiérarchique (CAH). Si les variables sont hétérogènes (différentes unités de mesure) ils utiliseront une analyse en composantes principales sur le tableau des variables standardisées suivi d'une CAH en métrique euclidienne. Si les variables forment un tableau de contingence, il pourront appliquer les méthode précédentes sur un tableau de profils en ligne (standardisés ou non) ou bien opter pour le couplage entre analyse factorielle des correspondances et classification ascendante hiérarchique en métrique du chi-2. Ces approches qui s'inscrivent dans la tradition de l'analyse des données "*à la française*" ont été formalisées initialement par les travaux de @benzecri1973, puis popularisés en géographie par l'ouvrage de @sanders1989 et finalement mis à la disposition d'un large public grâce à l'excellent package FactomineR [@lê2008] et les publications de ses auteurs, notamment @husson2016. Les avantages du couplage entre les deux approches sont évidents puisque les méthodes factorielles permettent d'analyser d'abord les corrélations entre les colonnes du tableaux avant de procéder au regroupement des lignes à l'aide de la CAH [@husson2010].
+Les géographes français qui sont confrontés à l'analyse d'un ensemble de variables décrivant un ensemble de lieux vont le plus souvent procéder à une analyse en deux étapes combinant analyse factorielle et classification ascendante hiérarchique (CAH). Si les variables sont hétérogènes (différentes unités de mesure) ils utiliseront une analyse en composantes principales sur le tableau des variables standardisées suivi d'une CAH en métrique euclidienne. Si les variables forment un tableau de contingence, ils pourront appliquer les méthode précédentes sur un tableau de profils en ligne (standardisés ou non) ou bien opter pour le couplage entre analyse factorielle des correspondances et classification ascendante hiérarchique en métrique du chi-2. Ces approches qui s'inscrivent dans la tradition de l'analyse des données "*à la française*" ont été formalisées initialement par les travaux de @benzecri1973, puis popularisés en géographie par l'ouvrage de @sanders1989 et finalement mis à la disposition d'un large public grâce à l'excellent package FactomineR [@lê2008] et les publications de ses auteurs, notamment @husson2016. Les avantages du couplage entre les deux approches sont évidents puisque les méthodes factorielles permettent d'analyser d'abord les corrélations entre les colonnes du tableau avant de procéder au regroupement des lignes à l'aide de la CAH [@husson2010].
 
 Sans remettre en cause l'intérêt de ces approches, nous souhaiterions proposer ici une autre forme de couplage de méthodes statistiques associant **classification** et **régionalisation**, issue des travaux des écologues qui s'intéressent aux associations spatiales de plantes ou d'animaux et cherchent à en mesurer l'abondance, la spécialisation et la diffusion [@legendre1989, @legendre2013]. Si le point de départ est le même (tableau croisant des lieux décrits par un ensemble de variables), les analyses vont ici surtout porter sur des tableaux homogènes décrivant soit l'abondance de différentes espèces (tableau de contingence), soit leur présence/absence (tableau disjonctif complet). Et surtout elles vont ajouter un élément supplémentaire sous la forme d'une matrice de proximité décrivant généralement la contiguïté des lieux sous la forme d'un **graphe de voisinage**. La procédure de régionalisation mise au point récemment avec la fonction `constr.hclust()`du package `adespatial` suit le schéma suivant (@fig-shema) :
 
@@ -34,28 +34,24 @@ knitr::include_graphics("figures/Legendre_regionalisation.jpg")
 Il s'agit donc d'une méthode de classification ascendante hiérarchique comparable à celles réalisables en langage `R-Base` (fonction `hclust()`) ou dans `FactoMineR` (fonction `HCPC()`) mais avec deux différences importantes. D'une part, l'ajout de la contrainte de contiguïté limite les possibilités de fusion des unités spatiales. D'autre part, il est possible d'utiliser un grand nombre de fonctions de dissimilarités en entrée, sans se limiter à celles qui sont privilégiées par les méthodes d'analyse factorielle à la française. Les écologues considèrent en effet que la distance euclidienne (normée ou non) et la distance du chi-2 ne sont pas toujours les plus pertinentes pour mesurer les ressemblances entre lieux, surtout si l'on considère leur caractère généralement non gaussien.
 
 
-## Un exemple pédagogique classique ...
+## Un exemple pédagogique classique en géographie quantitative ...
 
 L'objectif du présent article est de discuter l'intérêt de cette procédure pour l'analyse géographique de tableaux de contingence dont les lignes sont des lieux et les colonnes des attributs dont la somme en ligne a un sens. Nous avons retenu comme exemple d'application les résultats des élections européennes de 2024 en examinant les résultats à trois niveaux d'agrégation : les régions administratives, les départements et les circonscriptions législatives (cf. [partie suivante](#données-utilisées)). 
 
 Pour éviter une répétition, chaque niveau d'analyse sera dédié à un aspect différent du problème général de comparaison des approches de régionalisation et de classification :
 
--   **L'échelle régionale** sera utilisé pour rappeler les principes de base des méthodes de classification et de régionalisation en insistant sur le rôle déterminant du choix de la matrice de dissimilarité utilisée en entrée.
+-   **L'échelle régionale** sera utilisée pour rappeler les principes de base des méthodes de classification et de régionalisation en insistant sur le rôle déterminant du choix de la matrice de dissimilarité utilisée en entrée.
 
 -   **L'échelle départementale** constituera le niveau privilégié de comparaison des résultats des méthodes de classification et de régionalisation afin de voir leurs apports respectifs à la compréhension du phénomène.
 
--   **L'échelle des ciconcriptions** permettra d'examiner l'intérêt d'une approche multiscalaire et de souligner les difficultés de la régionalisation lorsque le phénomène change de nature en fonction du niveau d'agrégation.
+-   **L'échelle des circonscriptions** permettra d'examiner l'intérêt d'une approche multiscalaire et de souligner les difficultés de la régionalisation lorsque le phénomène change de nature en fonction du niveau d'agrégation.
 
 
-L'exemple des données électorales avait été initialement choisi pour des raisons pédagogiques (agrégation à différentes échelles, nombre élevé de listes, intérêt des lecteurs pour un sujet d'actualité, ...). Il est en effet très classique pour les enseignants de géographie dite "quantitative" d'illustrer les cours d'analyse des donnés par des tableaux de résultats électoraux en utilisant successivement une analyse factorielle et une classification ascendante hiérarchique. Dans une publication de la revue Feuilles de Géographie intitulée "*1995 : les élections présidentielles et la fracture sociale où les jubilations des géographes quantitativistes*", les auteures justifient ainsi le choix de l'exemple retenu : 
+L'exemple des données électorales avait été initialement choisi pour des raisons pédagogiques (agrégation à différentes échelles, nombre élevé de listes, intérêt des lecteurs pour un sujet d'actualité, ...). Il est en effet très classique pour les enseignants de géographie dite "quantitative" d'illustrer les cours d'analyse des donnés par des tableaux de résultats électoraux en utilisant successivement une analyse factorielle et une classification ascendante hiérarchique. Dans une publication pédagogique de la revue Feuilles de Géographie intitulée "*1995 : les élections présidentielles et la fracture sociale où les jubilations des géographes quantitativistes*" (@baron1995), les auteures présentent les apports respectifs de l'analyse factorielle et de la classification et justifient ainsi le choix de l'exemple retenu : 
 
 
-:::: {.columns}
-::: {.column width=40% .r-fit-text}
-> "Car depuis A. Siegfried, Les Brouillons Dupont et Theo Quant, quand un géographe  "quantitativiste" rencontre *Le Monde* daté du surlendemain du scrutin, c'est tout de suite le coup de foudre: et que je t'achète, et que je te feuillette frenétiquement, et que je m'extasie devant tel score et que je pleure devant tel autre, et que je saisis le tableau de données et que je sors les analyses,... et - oh suprême récompense - que je cartographie les plus "beaux" résultats. A chaque nouveau scrutin c'est un éternel recommencement ! Alors, vous pensez : quand, par bonheur, les élections présidentielles surviennent avant la session d'examen de Juin, c'est l'EU - PHO - RIE ! Imaginez 96 départements et 9 candidats : toutes ces combinaisons ! Vertigineux, non ?" @baron1995
-:::
+> "Car depuis A. Siegfried, Les Brouillons Dupont et Theo Quant, quand un géographe  "quantitativiste" rencontre *Le Monde* daté du surlendemain du scrutin, c'est tout de suite le coup de foudre: et que je t'achète, et que je te feuillette frenétiquement, et que je m'extasie devant tel score et que je pleure devant tel autre, et que je saisis le tableau de données et que je sors les analyses,... et - oh suprême récompense - que je cartographie les plus "beaux" résultats. A chaque nouveau scrutin c'est un éternel recommencement ! Alors, vous pensez : quand, par bonheur, les élections présidentielles surviennent avant la session d'examen de Juin, c'est l'EU - PHO - RIE ! Imaginez 96 départements et 9 candidats : toutes ces combinaisons ! Vertigineux, non ?" 
 
-::: {.column width=60% .r-fit-text}
 ```{r fig-baron}
 #| echo: false
 #| out.width: "60%"
@@ -65,20 +61,37 @@ L'exemple des données électorales avait été initialement choisi pour des rai
 knitr::include_graphics("figures/baron1995.png")
 ```
 
-:::
-::::
+
+
+
+## ... mais soulevant des questions théoriques et critiques en géographie électorale
+
+Avec le renouveau de la géographie politique en France (@bussi1998, @riviere2009) et le développement de liens plus étroits entre géographes et politistes (@gombin2014), il n'est toutefois plus possible d'analyser la distribution spatiale des données électorales sans introduire une dimension plus théorique sur la signification des résultats observés. Et en tous les cas il peut sembler choquant de transposer une méthode issue de la biologie aux phénomènes humains sans s'être au préalable assurer de la pertinence du transfert. Ce que souligne à juste titre l'un des rapporteurs du présent article : 
+
+>"L’introduction évoque des techniques « issues des travaux des écologues qui s’intéressent aux associations spatiales de plantes ou d’animaux et cherchent à en mesurer l’abondance, la spécialisation et la diffusion », et le résumé de l’article précise qu’une des technique de classification/régionalisation présentée dans l’article « s’appuie sur un corpus théorique d’analyse spatiale de la biodiversité des espaces animales ou végétales que l’on peut transposer à de nombreux problèmes géographiques », mais on aimerait en savoir un peu plus sur ce corpus théorique, et sur les « problèmes géographiques » que l’on peut traiter ainsi. En effet et au plan épistémologique, la question de la diffusion telle que traitée en biogéographie et celle des effets de contexte sur la formation des opinions en géographie électorale (pour reprendre le champ thématique de l’article) peuvent difficilement être abordées de la même manière, au risque d’une tendance à la naturalisation des dynamiques sociales.st-ce à dire, comme le considère le démographe H. Le Bras (@lebras2002), que les opinions se transmette de proche en proche à la manière de lois de l’épidémiologie ? Si c’est l’idée que souhaite défendre l’auteur (ce qui est tout à fait possible, il existe une littérature de sociologie anglophone sur les « conversion par la conversation ») et dans l’esprit des précautions de Bourdieu & Passeron « la fausse neutralité des techniques » (@bourdieu2005), alors il faut aller plus loin dans l’explicitation des implications théoriques des deux techniques discutées (**Jean Rivière**)"
+
+Le choix d'une méthode de classification ou de régionalisation pour étudier la répartition des comportements électoraux n'est donc pas neutre car il conditionne l'interprétation même des résultats en termes de processus de formation des opinions. On retrouve en fait ici les termes de la controverse qui oppose G. Tarde et E. Durkheim dans le fameux chapitre 4 du *Suicide* (@durkheim1897) et qui est illustré par la fameuse carte du taux de suicide par arrondissements : 
 
 
 
 
+> "En définitive, ce que nous montrent toutes les cartes, c'est que le suicide, loin de se disposer plus ou moins concentriquement autour de certains loyers à partir desquels il irait en se dégradant progressivement, se présente, au contraire, par grandes masses à peu près homogènes (mais à peu près seulement) et dépourvues de tout noyau central. Une telle configuration n'a donc rien qui décèle l'influence de l'imitation […]"
+"Il n'y a ici ni imitateurs ni imités, mais identité relative dans les effets due à une identité relative dans les causes. Et on s'explique, aisément qu'il en soit ainsi si, comme tout ce qui précède le fait déjà prévu, le suicide dépend essentiellement de certains états du milieu social. Car ce dernier garde généralement la même constitution sur d'assez larges étendues de territoire. Il est donc naturel que, partout où il est le même, il ait les mêmes conséquences sans que la contagion y soit pour rien. C'est pourquoi il arrive le plus souvent que, dans une même région, le taux des suicides se soutienne à peu près au même niveau. […]"
+Ce qui prouve que cette explication est fondée, c'est qu'on le voit se modifier brusquement du tout au tout chaque fois que le milieu social change brusquement. Jamais celui-ci n'étend son action au-delà de ses limites naturelles. Jamais un pays que des conditions particulières prédisposent spécialement au suicide n'impose, par le seul prestige de l'exemple, son penchant aux pays voisins, si ces mêmes conditions ou d'autres semblables ne s'y trouvent pas au même degré. "
 
-## ... mais soulevant des questions théoriques nouvelles
+```{r fig-durkheim}
+#| echo: false
+#| out.width: "60%"
+#| fig-align: 'center'
+#| fig-cap: 'Suicides en France par arondissement 1887-1991 (Durkheim E., 1897, Le Suicide, Chap. IV)'
+
+knitr::include_graphics("figures/durkheim1897.png")
+```
 
 
+Emile Durkheim ne disposait évidemment pas de l'apport des modèles multi-niveaux ou des techniques de régression géographiquement pondérée qui permettent de séparer les déterminants individuels et contextuels du suicide. Mais il montre très tôt une sensibilité aux échelles d'agrégation (justification des arrondissements plutôt que des départements qui masqueraient les effets urbains). Et surtout suggère que le choix d'une méthode de régionalisation ou de classification implique plutôt dans le premier cas une interprétation structuraliste et dans le second une hypothèse diffusioniste. 
 
-
-
-
+Même si ce n'état pas l'objectif initial de cet article, nous aurons donc le souci tout au long de l'analyse de l'exemple des résultats électoraux aux différentes échelles de comparer les résultats des méthodes de classification et de régionalisation en gardant en tête le fait qu'elles reposent sur des hypothèses interprétatives fondamentalement différentes.
 
 
 ## Données utilisées {.unnumbered}
@@ -262,7 +275,7 @@ Les packages nécessaires pour réaliser la chaîne de traitement présentée so
 -   `mapsf` pour la construction de carte thématique 
 -   `ineq` pour le calcul de l'indice de Gini
 -   `spdep` pour le calcul de matrices spatiales
--   `adespatial` pour réaliser des classification à contrainte spatiale
+-   `adespatial` pour réaliser des classifications à contrainte spatiale
 -   `cartogramR` pour construire des cartogramme (anamorphose)
 
 Chargement des librairies :
@@ -431,12 +444,12 @@ mf_distr(don$Marechal, nbins = 4, bw = sd(don$Marechal))
 ```
 
 ::: {.alert .alert-success role="alert"}
-**Commentaire** : la distribution des votes Bardella est légèrement dissymétrique à droite avec une valeur exceptionellement faible correspondant à l'Ile-de-France. La distribution de Maréchal est au contraire dissymétrique à gauche avec une valeur exceptionnellement forte correspondant à la région PACA. La comparaison des deux distributions spatiales ne semble pas révéler à première vue de corrélation positive ou négative ce qui est confirmé par les coefficients de Pearson ($r=0.20, p =0.53$) ou de Spearman ($\rho =+0.03, p=0.94$).
+**Commentaire** : la distribution des votes Bardella est légèrement dissymétrique à droite avec une valeur exceptionnellement faible correspondant à l'Ile-de-France. La distribution de Maréchal est au contraire dissymétrique à gauche avec une valeur exceptionnellement forte correspondant à la région PACA. La comparaison des deux distributions spatiales ne semble pas révéler à première vue de corrélation positive ou négative ce qui est confirmé par les coefficients de Pearson ($r=0.20, p =0.53$) ou de Spearman ($\rho =+0.03, p=0.94$).
 :::
 
 ## Matrices de dissimilarité
 
-En amont d'une classification ou d'une régionalisation, la création d'une matrice de dissimlilarité entre les unités spatiales est une étape essentielle qui conditionne la suite des analyses. Deux choix essentiels interviennent alors :
+En amont d'une classification ou d'une régionalisation, la création d'une matrice de dissimilarité entre les unités spatiales est une étape essentielle qui conditionne la suite des analyses. Deux choix essentiels interviennent alors :
 
 -   le choix d'une transformation ou non des indicateurs
 -   le choix d'une métrique
@@ -463,7 +476,7 @@ grid()
 ```
 
 ::: {.alert .alert-success role="alert"}
-**Commentaire** : sur la figure ci-dessus, on a pris soin de construire deux axes orthonormées où une différence d'un point de pourcentage correspond à la même distance horizontalement et verticalement. Il est donc logique que la figure soit beaucoup plus étendue dans le sens horizontal que dans le sens vertical puisque le vote Bardella crée plus de différences entre les régions en valeur absolue que le vote Maréchal
+**Commentaire** : sur la figure ci-dessus, on a pris soin de construire deux axes orthonormés où une différence d'un point de pourcentage correspond à la même distance horizontalement et verticalement. Il est donc logique que la figure soit beaucoup plus étendue dans le sens horizontal que dans le sens vertical puisque le vote Bardella crée plus de différences entre les régions en valeur absolue que le vote Maréchal
 :::
 
 On voit visuellement sur la figure précédente que les points représentant les unités spatiales sont plus ou moins éloignés, la distance qui les sépare étant une mesure de leur dissimilarité en matière de vote pour les deux listes considérées. Deux mesures de distances peuvent alors classiquement être utilisées pour convertir les positions en matrice de distance :
@@ -499,7 +512,7 @@ data.frame(DS_eucl)  |> gt(rownames_to_stub = T) |>
 ::: {.alert .alert-success role="alert"}
 **Commentaire** : La plus forte dissimilarité est observée entre la région Ile-de-France (IDF) et la région Hauts-de-France (HDFR) et la plus faible entre les régions Centre Val de Loire (CVDL) et Normandie (NORM).
 
-En comparant la matrice de dissimilarité au graphique orthonormé précédent, on comprend que les différences entre unités spatiales sont essentiellement produites par les variations du vote Bardella qui possède une plus forte variance que le vote Maréchal. Ce dernier n'introduit que des différenciations secondraires.
+En comparant la matrice de dissimilarité au graphique orthonormé précédent, on comprend que les différences entre unités spatiales sont essentiellement produites par les variations du vote Bardella qui possède une plus forte variance que le vote Maréchal. Ce dernier n'introduit que des différenciations secondaires.
 :::
 
 ### Espace des variables standardisées
@@ -620,7 +633,7 @@ data.frame(DS_Man_rnk) |> gt(rownames_to_stub = T) |>
 
 Il existe de nombreuses autres solutions permettant de transformer le petit tableau de données en d'autres matrices de dissimilarité tout aussi légitimes que les trois présentées ci-dessus. On pourrait par exemple utiliser une autre métrique telle que distance de Tchebychev qui est la magnitude absolue maximale des différences entre les coordonnées des points.
 
-Le point important à retenir avant de passer à la suite des analyses est que **le choix de la matrice de dissimilarité exerce une influence cruciale sur les résultats des méthodes de classification ou de régionalisation qui vont être mise en oeuvre**. Or, ce choix est trop souvent implicite dans les logiciels de statistiques qui proposent par défaut des méthodes fondées sur la **variance** c'est-à-dire sur le **carré des distances euclidiennes standardisées**. Ce choix est le plus souvent justifié car il évite aux débutants en statistique des erreurs fatales telles que le fait de ne pas standardiser un jeu de variables hétérogènes ayant des unités de mesure et des ordres de grandeur différents. Mais il peut aussi aboutir à des résultats discutables ou du moins pas forcément les plus adaptés à la problématique.
+Le point important à retenir avant de passer à la suite des analyses est que **le choix de la matrice de dissimilarité exerce une influence cruciale sur les résultats des méthodes de classification ou de régionalisation qui vont être mises en œuvre**. Or, ce choix est trop souvent implicite dans les logiciels de statistiques qui proposent par défaut des méthodes fondées sur la **variance** c'est-à-dire sur le **carré des distances euclidiennes standardisées**. Ce choix est le plus souvent justifié car il évite aux débutants en statistique des erreurs fatales telles que le fait de ne pas standardiser un jeu de variables hétérogènes ayant des unités de mesure et des ordres de grandeur différents. Mais il peut aussi aboutir à des résultats discutables ou du moins pas forcément les plus adaptés à la problématique.
 
 ## Classification
 
@@ -628,7 +641,7 @@ Le point important à retenir avant de passer à la suite des analyses est que *
 
 Les méthodes de classification et de régionalisation ascendante hiérarchiques ont pour point commun d'opérer un regroupement des unités spatiales en allant des plus ressemblantes au moins ressemblantes. Elles fournissent un arbre de regroupement qui permet de visualiser chaque étape du regroupement et des critères permettant d'opérer un compromis entre l'homogénéité interne des classes ou régions et leur nombre.
 
-Une bonne classification (ou une bonne régionalisation) devra comporter le moins de classes ou régions pour offrir un bon résumé. Mais également un nombre suffisant pour éviter de constituer des ensembles trop hétérogène. On utilise souvent la part de variance expliquée par la partition pour mesurer cette qualité. Mais ce choix conduit à imposer une métrique (distance euclidienne) et un algorithme (critère de Ward). Il est plus intéressant de prendre un critère plus général fondé sur le rapport entre les dissimilarités internes et externes des entités constituées. Si on s'en tient à la définition de classes ou régions homogènes comme des **groupes d'unités spatiales qui se ressemblent plus entre elles qu'elles ne ressemblent aux unités spatiales des autres groupes**, alors notre critère à optimiser $H$ prendra une des formes suivantes :
+Une bonne classification (ou une bonne régionalisation) devra comporter le moins de classes ou régions pour offrir un bon résumé. Mais également un nombre suffisant pour éviter de constituer des ensembles trop hétérogènes. On utilise souvent la part de variance expliquée par la partition pour mesurer cette qualité. Mais ce choix conduit à imposer une métrique (distance euclidienne) et un algorithme (critère de Ward). Il est plus intéressant de prendre un critère plus général fondé sur le rapport entre les dissimilarités internes et externes des entités constituées. Si on s'en tient à la définition de classes ou régions homogènes comme des **groupes d'unités spatiales qui se ressemblent plus entre elles qu'elles ne ressemblent aux unités spatiales des autres groupes**, alors notre critère à optimiser $H$ prendra une des formes suivantes :
 
 $$H = \frac{Dissimilarité \space inter \space groupe}{Dissimilarité \space intra \space groupe}$$
 
@@ -642,7 +655,7 @@ $$H =  1- \frac{Dissimilarité \space intra \space groupe}{Dissimilarité \space
 
 ### Choix de l'algorithme de regroupement
 
-Une classification ascendante hiérarchique peut s'opérer selon différents algorithmes qui correspondent à différents critères d'optimisation. Le critère qui semble intuitivement le plus simple est la minimisation des **distances moyennes** intra-classes et la maximisation des **distances moyennes** inter-classes. Cette méthode du *average linkage* est la plus simple à comprendre. Mais il existe beaucoup d'autres algorithmes cherchant par exemple à minimiser les distances miÉcnimales (*single linkage*), les distance maximales (*complete linkage*), les distances médianes, etc... La méthode par défaut de la plupart des logiciels de statistiques est appelée méthode de *Ward* qui consiste à minimiser la somme des distances entre les centres de gravité des classes ce qui la place l'analyse dans le cadre de l'analyse de la variance [@ward1963]. Cette méthode comporte toutefois des variantes qui produisent des résultats différents comme cela a été démontré par @murtagh2014 et on distingue en pratique deux méthodes *Ward.D* et *Ward.D2* qui s'appliquent à des distances simples ou des distances élevées au carré.
+Une classification ascendante hiérarchique peut s'opérer selon différents algorithmes qui correspondent à différents critères d'optimisation. Le critère qui semble intuitivement le plus simple est la minimisation des **distances moyennes** intra-classes et la maximisation des **distances moyennes** inter-classes. Cette méthode du *average linkage* est la plus simple à comprendre. Mais il existe beaucoup d'autres algorithmes cherchant par exemple à minimiser les distances minimales (*single linkage*), les distance maximales (*complete linkage*), les distances médianes, etc... La méthode par défaut de la plupart des logiciels de statistiques est appelée méthode de *Ward* qui consiste à minimiser la somme des distances entre les centres de gravité des classes ce qui la place l'analyse dans le cadre de l'analyse de la variance [@ward1963]. Cette méthode comporte toutefois des variantes qui produisent des résultats différents comme cela a été démontré par @murtagh2014 et on distingue en pratique deux méthodes *Ward.D* et *Ward.D2* qui s'appliquent à des distances simples ou des distances élevées au carré.
 
 Pour assurer une bonne comparabilité des résultats de classification et de régionalisation, nous utiliserons ici la fonction R-base `hclust()` (*hierarchical clustering*) plutôt que la fonction `HCPC()` du package `FactoMineR` qui est plus puissante mais introduit souvent des modifications de l'algorithme de base à l'insu de l'utilisateur non averti (notamment le fait d'optimiser a posteriori les classes par une méthode de type k-means). La régionalisation sera faite à l'aide de la fonction `constr.clust()` du package `adespatial` qui reproduit fidèlement la méthode de la fonction `hclust()` en y ajoutant simplement une contrainte de contiguïté des unités regroupées. Pour plus de détail on se reportera à la description de la classification avec contrainte de contiguïté dans @guénard2022.
 
@@ -731,7 +744,7 @@ mf_layout("3.b CAH en 3 classes", frame = TRUE, arrow = FALSE, credits = "")
 
 
 ::: {.alert .alert-success role="alert"}
-Les trois classifications aboutissent logiquement à des regroupements différents puisqu'elles sont fondées sur des matrices de dissimilarité différentes. La région Ile-de-France ne se regroupe jamais avec les régions voisines car son score pour la liste Bardella est beaucoup plus faible et son score pour la liste Maréchal un peu plus élevé. Elle se regroupe fréquemment avec les régions de l'Ouest (Bretagne, Pays-de Loire, Aquitaine) qui se caractérisent par la faiblesse relative du vote d'extrême-droite. La région PACA se regroupe quant-à elle surtout avec sa voisine d'Occitanie avec laquelle elle partage une fort vote Bardella et Maréchal. Mais elle diffère trop de la région Auvergne-Rhône-Alpes pour former un regroupement avec les régions du Nord et de l'Est. Au total, **aucune des classifications n'aboutit à une régionalisation** c'est-dire à une division de la France en trois sous-ensembles connexes de régions voisines.
+Les trois classifications aboutissent logiquement à des regroupements différents puisqu'elles sont fondées sur des matrices de dissimilarité différentes. La région Ile-de-France ne se regroupe jamais avec les régions voisines car son score pour la liste Bardella est beaucoup plus faible et son score pour la liste Maréchal un peu plus élevé. Elle se regroupe fréquemment avec les régions de l'Ouest (Bretagne, Pays-de Loire, Aquitaine) qui se caractérisent par la faiblesse relative du vote d'extrême-droite. La région PACA se regroupe quant à elle surtout avec sa voisine d'Occitanie avec laquelle elle partage une fort vote Bardella et Maréchal. Mais elle diffère trop de la région Auvergne-Rhône-Alpes pour former un regroupement avec les régions du Nord et de l'Est. Au total, **aucune des classifications n'aboutit à une régionalisation** c'est-dire à une division de la France en trois sous-ensembles connexes de régions voisines.
 :::
 
 ## Régionalisation
@@ -805,7 +818,7 @@ Dans les analyses de classification précédents, aucune contrainte de contiguï
 Il découle de ce qui précède une conséquence fondamentale qui est le fait qu'**une régionalisation suppose un double choix en ce qui concerne la matrice de dissimilarité, d'une part, et la matrice de proximité d'autre part**. Or, si le choix de la contiguïté administrative paraît évident dans le cas étudié ici, d'autres solutions seraient possibles pour établir un graphe de proximité aboutissant à d'autres formes de régionalisation. On peut en donner rapidement deux exemples.
 
 -   Une **triangulation de Delaunay** pourrait par exemple être établie entre les centres des unités spatiales, qui aboutirait également à un graphe planaire mais ne respecterait pas forcément le critère de présence d'une frontière commune. On peut la réaliser facilement avec la fonction `tri2nb()` du package `spdep`.
--   La **méthode des k plus proches voisins** pourrait également servir à déterminer pour chaque unité spatiale les k plus proches en prenant comme critère la distance à vol d'oiseau entre leurs centres. On réalise facilement le graphe à l'aide des fonctions `knearneigh()` et `knn()` du package `spdep`. On obtient alors un graphe non planaire mais où chaque unité spatial aurait des nombres de voisins plus proches que dans le cas du graphe de contiguïté (mais pas forcément égal).
+-   La **méthode des k plus proches voisins** pourrait également servir à déterminer pour chaque unité spatiale les k plus proches en prenant comme critère la distance à vol d'oiseau entre leurs centres. On réalise facilement le graphe à l'aide des fonctions `knearneigh()` et `knn()` du package `spdep`. On obtient alors un graphe non planaire mais où chaque unité spatiale aurait des nombres de voisins plus proches que dans le cas du graphe de contiguïté (mais pas forcément égal).
 
 ```{r triangulation de Delaunay}
 #| layout: [[50,50]]
@@ -868,7 +881,7 @@ Comme on peut le voir sur les cartes ci-dessus, il est possible de produire des 
 
 ### Régionalisation
 
-Comme dans le cas de la classification, il existe de nombreux algorithmes possible pour regrouper les unités spatiales en cherchant à minimiser les dissimilarités intra-régionales. Nous nous limiterons ici à l'algorithme de régionalisation réalisé par la fonction `constr.hclust()` du package `adespatial` qui présente l'intérêt d'utiliser exactement les mêmes formules de calcul que la fonction `hclust()` de R-base et offre une parfaite possibilité de comparaison des résultats entre les deux approches. Pour éviter de multiplier les exemples, nous nous limiterons ici à l'analyse des régionalisations fondées sur une matrice de contiguïté, en reprenant les trois matrices de dssimilarité précédentes.
+Comme dans le cas de la classification, il existe de nombreux algorithmes possibles pour regrouper les unités spatiales en cherchant à minimiser les dissimilarités intra-régionales. Nous nous limiterons ici à l'algorithme de régionalisation réalisé par la fonction `constr.hclust()` du package `adespatial` qui présente l'intérêt d'utiliser exactement les mêmes formules de calcul que la fonction `hclust()` de R-base et offre une parfaite possibilité de comparaison des résultats entre les deux approches. Pour éviter de multiplier les exemples, nous nous limiterons ici à l'analyse des régionalisations fondées sur une matrice de contiguïté, en reprenant les trois matrices de dissimilarité précédentes.
 
 ```{r regionalisation_contig}
 # CAH contrainte - Euclidienne non standardisée
@@ -960,21 +973,21 @@ Comme dans le cas de la classification (cf. [partie 2.4.2](#comparaison-des-clas
 
 ## Conclusion
 
-Au final, cet exercice souligne la complexité des options possibles du fait du nombre de choix qu'il faut opérer pour réaliser une classification et, a fortiori une régionalisation. Encore n'avons nous pas fait état de l'ensemble des solutions alternatives, notamment celles qui se fondent sur des méthodes de classification descendantes (ref. ???) ou sur des méthodes de type noyau mobile.
+Au final, cet exercice souligne la complexité des options possibles du fait du nombre de choix qu'il faut opérer pour réaliser une classification et, a fortiori une régionalisation. Encore n'avons-nous pas fait état de l'ensemble des solutions alternatives, notamment celles qui se fondent sur des méthodes de classification descendantes (ref. ???) ou sur des méthodes de type noyaux mobiles.
 
-Mais la question la plus fondamentale est probablement la suivante : **quel est l'apport d'une régionalisation par rapport à une classification pour l'analyse d'un phénomène social** ? Puisque nous avons vu qu'une régionalisation est par définition moins efficace qu'une classification pour constituer des groupes homogènes, il faut que la prise en compte des contraintes spatiales apporte un avantage décisif à la régionalisation pour choisir de la mettre en oeuvre. Ce qui suppose que la matrice de proximité spatiale ait un sens pour la personne qui va interpréter les résultats.
+Mais la question la plus fondamentale est probablement la suivante : **quel est l'apport d'une régionalisation par rapport à une classification pour l'analyse d'un phénomène social** ? Puisque nous avons vu qu'une régionalisation est par définition moins efficace qu'une classification pour constituer des groupes homogènes, il faut que la prise en compte des contraintes spatiales apporte un avantage décisif à la régionalisation pour choisir de la mettre en œuvre. Ce qui suppose que la matrice de proximité spatiale ait un sens pour la personne qui va interpréter les résultats.
 
 C'est ce point que nous allons maintenant explorer en étudiant l'ensemble des résultats des élections européennes à trois niveaux d'agrégation.
 
-# Échelle départementale : classification et régionnalisation hiérarchiques
+# Échelle départementale : classification et régionalisation hiérarchiques
 
-La réalisation d'une classification et d'une régionalisation des résultats des élections européennes va être menée à différentes échelles, depuis le niveau des régions jusqu'à celui des circonscriptions en passant par le liveau départemental. L'objectif sera de construire des classes ou des régions présentant des profils électoraux homogènes en matière de vote.
+La réalisation d'une classification et d'une régionalisation des résultats des élections européennes va être menée à différentes échelles, depuis le niveau des régions jusqu'à celui des circonscriptions en passant par le niveau départemental. L'objectif sera de construire des classes ou des régions présentant des profils électoraux homogènes en matière de vote.
 
-Préalablement à ces analyses, il est important d'analyser la distribution des votes afin de distinguer l'implantation spatiale des listes candidates au scutin afin de repérer celles qui vont le plus contribuer aux différenciations au niveau national ou au niveau local.
+Préalablement à ces analyses, il est important d'analyser la distribution des votes afin de distinguer l'implantation spatiale des listes candidates à ce scrutin européen afin de repérer celles qui vont le plus contribuer aux différenciations au niveau national ou au niveau local.
 
 ## Analyse des listes
 
-Les électeurs français ont eu le choix entre 38 listes lors des élections européennes de juin 2024 (cf [données](a.-résultats-des-élections-européennes-de-2024)). Mais seule une partie d'entre elles a connu une audience nationale et beaucoup de petites listes n'ont même pas été capable de fournir des bulletins dans tous les bureaux de votes.
+Les électeurs français ont eu le choix entre 38 listes lors des élections européennes de juin 2024 (cf. [données](a.-résultats-des-élections-européennes-de-2024)). Mais seule une partie d'entre elles a connu une audience nationale et beaucoup de petites listes n'ont même pas été capable de fournir des bulletins dans tous les bureaux de votes.
 
 ### Loi rang-taille ?
 
@@ -1180,7 +1193,7 @@ kable(mat[1:13, ], digits = 2)
 
 ::: {.alert .alert-success role="alert"}
 -   la **classe 1** est assez proche du **profil moyen** avec une légère sur-représentation des votes Bardella (+1.5) et Aubry (+0.79), associée à une sous-représentation des votes Glucksman (-0.91), Lassalle (\_0.79), Hayer (-0.55) et Bellamy (-0.32).
--   la **classes 2** est caractérisée par la **très forte surreprésentation du vote d'extrême droite** pour Bardella (+7.5), Maréchal (+0.38) ou Philippot (+0.05) ainsi que le parti animaliste (+0.2) associé à une sous-représentation des autres partis, en particulier de Glucksmann (-2.78) et Toussaint.
+-   la **classe 2** est caractérisée par la **très forte surreprésentation du vote d'extrême droite** pour Bardella (+7.5), Maréchal (+0.38) ou Philippot (+0.05) ainsi que le parti animaliste (+0.2) associé à une sous-représentation des autres partis, en particulier de Glucksmann (-2.78) et Toussaint.
 -   la **classe 3** surreprésente les votes des **partis centristes**, qu'il s'agisse du centre-gauche (Hayer : +2.56), du centre-droit (Glucksman : +2.01) ou des écologistes (Toussaint : +1.15) et elle sous-représente les partis d'extrême-droite mais aussi d'extrême gauche.
 -   la **classe 4** s'inscrit plutôt dans **une spécificité régionale du Sud-Ouest** caractérise par l'importance du vote Lassalle (+3.66) et du vote Deffontaines (+0.75), associé au vote de centre-gauche de la liste Glucksmann (+2.46). Comme dans le cas précédent, on observe une faiblesse du vote pour les partis d'extrême droite ou d'extrême gauche.
 -   la **classe 5** correspond enfin à un **vote des grandes métropoles** caractérisé par un score exceptionnel de la liste Aubry (+8.59), associé à une surreprésentation des votes pour les autres partis de gouvernement de droite (Bellamy : +1.06, Hayer : +1.23) ou de gauche (Glucksmann : +2.85, Toussaint : +2.44)
@@ -1228,7 +1241,7 @@ mf_layout("Graphe de voisinage", frame = TRUE, credits = "Grasland C., 2025")
 
 ### Dissimilarités locales
 
-Avant de procéder à la régionalisation, on peut visualisser les discontinuités en extrayant les frontières des unités spatiales à l'aide de la fonction `mf_get_borders()`du package `mapsf` et en effectuant une jointure avec les valeurs de dissimilarité [@grasland1997]. On pourra ainsi repérer les limites qui séparent des départements très ressemblants (donc susceptibles de se regrouper en régions) ou au contraire très différents (qui seront probablement localisés dans des régions différentes).
+Avant de procéder à la régionalisation, on peut visualiser les discontinuités en extrayant les frontières des unités spatiales à l'aide de la fonction `mf_get_borders()`du package `mapsf` et en effectuant une jointure avec les valeurs de dissimilarité [@grasland1997]. On pourra ainsi repérer les limites qui séparent des départements très ressemblants (donc susceptibles de se regrouper en régions) ou au contraire très différents (qui seront probablement localisés dans des régions différentes).
 
 ```{r local_dissimilarite}
 #| out-width: 90%
@@ -1261,9 +1274,9 @@ mf_layout("Cartographie des discontinuités", frame = TRUE, credits = "Grasland 
 Les discontinuités les plus remarquables sont celles qui séparent les départements d'Ile-de-France du reste du Bassin parisien (ex. dissimilarité de 26 points entre Yvelines et Eure) mais aussi les départements franciliens entre eux (ex. dissimilarité de 33 points entre Seine-Saint-Denis et Paris). On retrouve également de très fortes différences entre les départements qui abritent les grandes métropoles de province (Lyon, Toulouse, Nantes, Lille, ...) et leurs voisins. Mais il apparaît également des discontinuités entre certains départements plus ruraux. A l'inverse, on repère des groupes de départements peu différents les uns des autres dans les Alpes, le sud du Bassin Parisien ou le Centre-Ouest. La carte des discontinuités permet donc d'anticiper les regroupements les plus probables qui vont intervenir au cours de l'étape de régionalisation.
 :::
 
-Une approche différentes, proposée par les écologues, consiste à mesurer la contribution des unités spatiales et des variables les décrivant à la production des dissimilarités au niveau global et local. Cette approche est classiquement menée à l'aide de mesures basées sur la **variance,** mais les auteurs proposent de la généraliser à **une mesure quelconque de dissimilarité** ce qui permet une meilleure adéquation à la problématique [@legendre2013]. Et qui permet d'appliquer la méthode non pas à l'ensemble des dissimilarités (comme dans une ACP ou une CAH) mais uniquement aux dissimilarités locales.
+Une approche différente, proposée par les écologues, consiste à mesurer la contribution des unités spatiales et des variables les décrivant à la production des dissimilarités au niveau global et local. Cette approche est classiquement menée à l'aide de mesures basées sur la **variance,** mais les auteurs proposent de la généraliser à **une mesure quelconque de dissimilarité** ce qui permet une meilleure adéquation à la problématique [@legendre2013]. Et qui permet d'appliquer la méthode non pas à l'ensemble des dissimilarités (comme dans une ACP ou une CAH) mais uniquement aux dissimilarités locales.
 
-### Résultats de la regionalisation
+### Résultats de la régionalisation
 
 La réalisation d'une régionalisation ascendante hiérarchique est très simple avec la fonction `constr.hclust()`du package `adespatial`. 
 
@@ -1281,18 +1294,18 @@ plot(regio,
      cex = 0.7)
 # ---
 
-# Hiérarchie des noeuds
+# Hiérarchie des nœuds
 barplot(rev(regio$height)[1:20],
-        main = "Hiérarchie des noeuds",
+        main = "Hiérarchie des nœuds",
         names.arg = 1:20,
         cex.names = 0.4)
 ```
 
 ::: {.alert .alert-success role="alert"}
-L'arbre de classification et l'indice de hiérarchie des noeuds mettent tout d'abord en valeur les partitions en 2, 3 ou 4 classes qui se détachent très clairement des regroupements ultérieurs. On observe toutefois que la régionalisation en 2 classes est moins efficaces que la partition en deux classes ce qui peut suprendre un utilisateur habitué à utiliser des méthodes fondées sur la distance euclidienne au carré et la variance. Ce résulat est en fait logique dans la mesure où nouss avons utilisé une métrique non euclidienne [@guénard2022]. Dans notre exemple, il signale que le premier niveau de découpage de la France en régions électoral n'est pas une oppostion nord-est/sud-ouest mais un découpage en trois entités qui isole la région Ile-de-France. Quant au découpage en quatre régions, il met en valeur à l'intérieur de la France du nord-est le cas de la partie nord et est du bassin parisien qui est singulièrement différente du reste de la France du Nord-Est. Au delà de cette partition en quatre classes, on observe une suite de partition de niveau voisins jusqu'au 9e noeuds de l'arbre où apparaît une discontinuité nette, ce qui incite à retenir une partition en 10 régions. Le niveau de dissimilarité de ce découpage en 10 régions sera approximativment le même que celui que nous avios utilisé précédemment pour réaliser une classification comportant cinq classes. Ce qui confirme qu'une régionalisation est par définition moins efficace qu'une classification puisqu'elle doit comporter deux fois plus de groupes pour aboutir au même niveau d'homogénéité.
+L'arbre de classification et l'indice de hiérarchie des nœuds mettent tout d'abord en valeur les partitions en 2, 3 ou 4 classes qui se détachent très clairement des regroupements ultérieurs. On observe toutefois que la régionalisation en deux classes est moins efficace que la partition en trois classes ce qui peut surprendre un utilisateur habitué à utiliser des méthodes fondées sur la distance euclidienne au carré et la variance. Ce résultat est en fait logique dans la mesure où nous avons utilisé une métrique non euclidienne [@guénard2022]. Dans notre exemple, il signale que le premier niveau de découpage de la France en régions électorales n'est pas une opposition Nord-Est/Sud-Ouest mais un découpage en trois entités qui isole la région Ile-de-France. Quant au découpage en quatre régions, il met en valeur à l'intérieur de la France du nord-est le cas de la partie nord et est du bassin parisien qui est singulièrement différente du reste de la France du Nord-Est. Au delà de cette partition en quatre classes, on observe une suite de partitions de niveaux voisins jusqu'au 9e nœuds de l'arbre où apparaît une discontinuité nette, ce qui incite à retenir une partition en 10 régions. Le niveau de dissimilarité de ce découpage en 10 régions sera approximativement le même que celui que nous avions utilisé précédemment pour réaliser une classification comportant cinq classes. Ce qui confirme qu'une régionalisation est par définition moins efficace qu'une classification puisqu'elle doit comporter deux fois plus de groupes pour aboutir au même niveau d'homogénéité, du moins dans le cas du jeu de données utilisé ici.
 :::
 
-On peut représenter les quatre niveaux de régionalisation en effectuant un découpage de l'arbre à l'aide de la fonction `cutree()` et d'un logiciel quelconque de cartographie thématique dans R comme `mapsf`.
+On peut représenter les quatre niveaux de régionalisation en effectuant un découpage de l'arbre à l'aide de la fonction `cutree()` et d'un package quelconque de cartographie thématique dans R comme `mapsf` ou `tmap`.
 
 ```{r, cartograhie}
 #| out.width: 100%
@@ -1321,7 +1334,7 @@ mf_map(mapdon_dept, var="reg10",type="typo", leg_title = "Classes")
 mf_layout("10 régions", credits = "", scale=TRUE, frame=TRUE, arrow=FALSE)
 ```
 
-Mais on peut également utiliser la fonction `plot:constr.hclust()` du package `adespatial` à condition de lui fournir les centroïdes des unités spatiales. On peut alors visualiser la façon dont le graphe de contiguïté a été segmenté pour aboutir à une régionalisation. Il est alors intéressant d'y superposer la carte des discontinuités pour mieux voir comment les régions réspectent dans la mesure du possible les frontières correspondant aux plus fortes différences entre unités voisines.
+Mais on peut également utiliser la fonction `plot:constr.hclust()` du package `adespatial` à condition de lui fournir les centroïdes des unités spatiales. On peut alors visualiser la façon dont le graphe de contiguïté a été segmenté pour aboutir à une régionalisation. Il est alors intéressant d'y superposer la carte des discontinuités pour mieux visualiser comment les régions respectent dans la mesure du possible les frontières correspondant aux plus fortes différences entre unités voisines.
 
 ```{r regio_discon}
 #| out-width: 100%
@@ -1346,11 +1359,11 @@ mf_map(map_border_dep,
        lwd_max = 5,
        leg_pos = "left",
        add = TRUE)
-mf_layout("Relation entre régionalisation et dsicontinuités", frame = TRUE)
+mf_layout("Relation entre régionalisation et discontinuités", frame = TRUE)
 plot(regio, k = 10, links = TRUE, axes = FALSE, plot = FALSE, hybrids = "no")
 ```
 
-On procède maintenant à l'analyse des écarts au profil moyen en reprenant la même procédure que pour la classification. Pour faciliter l'analyse, on recode les noms de régions pour combiner les partitions en trois régions (Nord-Est = NE, Sud-Ouest = SO, Ile-de-France = IF) et la partition en 10 (les quatres sous-régions du Nord-Est sont codées NE1, NE2, NE3, NE4, les trois régions du Sud-Ouest SO1, SO2, SO3 et les trois régions d'Ile-de-France IF1, IF2, IF3)
+On procède maintenant à l'analyse des écarts au profil moyen en reprenant la même procédure que pour la classification. Pour faciliter l'analyse, on recode les noms de régions pour combiner les partitions en trois régions (Nord-Est = NE, Sud-Ouest = SO, Ile-de-France = IF) et la partition en 10 (les quatre sous-régions du Nord-Est sont codées NE1, NE2, NE3, NE4, les trois régions du Sud-Ouest SO1, SO2, SO3 et les trois régions d'Ile-de-France IF1, IF2, IF3)
 
 ```{r ecart_profil_moy}
 
@@ -1391,23 +1404,30 @@ kable(mat[1:13, ], digits = 2)
 
 
 ::: {.alert .alert-success role="alert"}
-Trois des quatre sous-régions qui composent la région Nord-Est se caractérisent par une surreprésentation générale des votes pour les listes de droite (Bellamy) ou d'extrême-droite (Bardella, Maréchal).
 
--   La **région NE1 de type droite et extrême droite** occupe les franges sud du bassin parisien ainsi que l'Alsace et le nord de la Lorraine. Elle se caractérise par une légère sur-représentation du vote Bardella (+2.57) combinée à une sur-représentation des autres votes de droite (Bellamy +0.48, Hayer +0.29, Maréchal +0.11, Philippot +0.07) et une sous-représentaiton des listes de gauche (Glucksman -1.49, Aubry -1.12, Toussaint -0.62).
--   la **region NE2 de type bastion RN rural et ouvrier** occupe le nord et l'est du bassin parisien de la Normandie à la Lorraine en passant par le Nord et la Champagne. Sa caractéristique principale est un score exceptionnellement élevé pour la liste Bardella (+9.65) et une faiblesse relative de toutes les autres listes à l'exception de la liste Thouy du parti animaliste.
--   la région **NE3 de type bastion d'extrême-droite diversifié** correspond à un vote d'extrême droite mélangeant davantage le vote RN de la liste Bardella (+4.04) avec d'autres avatars de l'extrême-droite se traduisant par une surreprésentation des listes Maréchal (+1.12), Asselineau (+0.13) ou Philippot (+0.12). Comme dans le cas précédent, les autres listes de droite classique ou de gauche sont sous-représentés à l'exception de la liste Aubry (+0.2).
--   la région **NE4 de type métropolitain écologiste** constitue une enclave à l'intérieur de la région NE regroupant la métropole Lyonnaise et le nord des Alpes. Elle affiche des caractéristiques très différentes voire opposées aux types prédédents. Elle se caractéristique par un score très élevé des écologistes (Toussaint +2.32, Gobernatori +0.23), ainsi que des partis de gauche (Aubry : +1.11) de centre-gauche (Glucksman +1.15) et de centre-droit (Hayer +0.67). Le vote Bardella y est nettement sous-représenté (-4.51) mais pas le vote de droite (Bellamy +0.33) ou d'extrême droite dans d'autres versions (Maréchal +0.37, Asselineau +0.09).
+**La région Nord-Est (NE)** se caractérisent par une surreprésentation générale des votes pour les listes de droite (Bellamy) ou d'extrême-droite (Bardella, Maréchal) dans trois de ses composantes sous-régionales, auxquelles il faut ajouter une enclave.
 
-La région Sud-Ouest affiche un profil général très différent caractérisé par la faiblesse conjointe des votes d'extrême-droite (Bardella, Maréchal) et d'extrême-gauche et une surreprésentation des listes portées par les partis centristes de gouvernement (Hayer, Glucksman). Mais elle affiche trois variantes bien typées en raison du rôle de deux listes à forte composante régionale. - la région **SO1 de type identité régionale sud-ouest** regroupe les départements situés au Nord des Pyrénées, du pays Basque à Toulouse. Son originalité fondamentale réside dans le poids exceptionnel du vote pour la liste Alliance Rurale portée par Jean Lassalle (+3.69) combinée par un vote très élevé pour les listes socialistes (Glucksman +3.62) et communiste (Deffontaines +0.42). - la région **SO2 de type radical-socialiste** prolonge la région précédente vers le massif central, exception faite de la vallée de la Garonne acquise à l'extrême-droite. Elle conserve des caractéristiques voisines de S01 mais en moins accentué. Elle aurait probablement fusionné avec la précédente sans l'obstacle constitué par les départements conquis par l'extrême-droite qui font obstacle à l'unification en une seule région. - la région **SO3 de type ouest chrétien-démocrate** associe les départements de Bretagne, Pays de Loire, Basse Normandie et nord de l'Aquitaine. Elle affiche une forte résistance au vote d'extrême-droite (Bardella -5.42, Maréchal -0.70) comme d'extrême-gauche (Aubry -1.54, Deffontaines -0.36) et concentre ses suffrages sur les listes des partis de centre-gauche (Glucksmann +2.81), de centre-droit (Hayer +3.59) ainsi que les écologistes (Toussaint +1.45, Governatori +0.18)
+-   La **sous-région NE1 de type droite et extrême droite** occupe les franges sud du bassin parisien ainsi que l'Alsace et le nord de la Lorraine. Elle se caractérise par une légère sur-représentation du vote Bardella (+2.57) combinée à une sur-représentation des autres votes de droite (Bellamy +0.48, Hayer +0.29, Maréchal +0.11, Philippot +0.07) et une sous-représentation des listes de gauche (Glucksman -1.49, Aubry -1.12, Toussaint -0.62).
+-   la **sous-région NE2 de type bastion RN rural et ouvrier** occupe le nord et l'est du bassin parisien de la Normandie à la Lorraine en passant par le Nord et la Champagne. Sa caractéristique principale est un score exceptionnellement élevé pour la liste Bardella (+9.65) et une faiblesse relative de toutes les autres listes à l'exception de la liste Thouy du parti animaliste.
+-   la **sous-région NE3 de type bastion d'extrême-droite diversifié** correspond à un vote d'extrême droite mélangeant davantage le vote RN de la liste Bardella (+4.04) avec d'autres avatars de l'extrême-droite se traduisant par une surreprésentation des listes Maréchal (+1.12), Asselineau (+0.13) ou Philippot (+0.12). Comme dans le cas précédent, les autres listes de droite classique ou de gauche sont sous-représentés à l'exception de la liste Aubry (+0.2).
+-   la **sous-région NE4 de type métropolitain écologiste** constitue une enclave à l'intérieur de la région NE regroupant la métropole Lyonnaise et le nord des Alpes. Elle affiche des caractéristiques très différentes voire opposées aux types précédents. Elle se caractéristique par un score très élevé des écologistes (Toussaint +2.32, Gobernatori +0.23), ainsi que des partis de gauche (Aubry : +1.11) de centre-gauche (Glucksman +1.15) et de centre-droit (Hayer +0.67). Le vote Bardella y est nettement sous-représenté (-4.51) mais pas le vote de droite (Bellamy +0.33) ou d'extrême droite dans d'autres versions (Maréchal +0.37, Asselineau +0.09).
 
-La région Ile-de-France forme la troisième région, caractérisée par une résistance générale au vote d'extrême droite et une performance exceptionnellement élevée de la liste LFI portée par Aubry. Elle n'en comporte pas moins de très forts contrastes internes.
+**La région Sud-Ouest (SO)** affiche un profil général très différent caractérisé par la faiblesse conjointe des votes d'extrême-droite (Bardella, Maréchal) et d'extrême-gauche et une surreprésentation des listes portées par les partis centristes de gouvernement (Hayer, Glucksman). Mais elle affiche trois variantes bien typées en raison du rôle de deux listes à forte composante régionale. 
 
--la région **IF1 de type métropolitain central** regroupe Paris, les Hauts-de Seine, les Yvelines et le Val-de-Marne dans une catégorie caractérisée par le partage des votes entre listes des partis de gouvernement de centre-gauche (Glucksman +3.81) et de centre-droit (Hayer +3.38) ainsi que par des scores très élevés pour la liste LFI (Aubry +8.3), les écologistes (Toussaint +2.8) et la droite classique (Bellamy +3.4) ou les formes d'extrême-droite élitiste (Maréchal +0.70). -la région **IF2 de type métropolitain périphérique** regroupe les départements de grande couronne du Val d'Oise, de l'Essone et de Seine-et-Marne avec un rejet du rassemblement national beaucoup moins marqué (-5.4) et un vote toujours plus important pour la liste LFI de M. Aubry (+9.55). Les partis centristes ont désormais des scores légèrement plus faibles que leur moyenne nationale. - la région **IF3 de type bastion LFI** se limite à l'unique département de Seine-Saint-Denis dont la caractéristique unique est le score exceptionnel de la liste Aubry (+28.8) et à un degré bien moindre des écologistes (Toussaint +1.75) et communistes (Deffontaines +0.29)
+- la **sous-région SO1 de type identité régionale sud-ouest** regroupe les départements situés au Nord des Pyrénées, du pays Basque à Toulouse. Son originalité fondamentale réside dans le poids exceptionnel du vote pour la liste Alliance Rurale portée par Jean Lassalle (+3.69) combinée par un vote très élevé pour les listes socialiste (Glucksman +3.62) et communiste (Deffontaines +0.42). 
+- la **sous-région SO2 de type radical-socialiste** prolonge la région précédente vers le massif central, exception faite de la vallée de la Garonne acquise à l'extrême-droite. Elle conserve des caractéristiques voisines de la classe S01 mais moins accentuées. Elle aurait probablement fusionné avec la précédente sans l'obstacle constitué par les départements conquis par l'extrême-droite qui font obstacle à l'unification en une seule région. 
+- la **sous-région SO3 de type ouest chrétien-démocrate** associe les départements de Bretagne, Pays de Loire, Basse Normandie et nord de l'Aquitaine. Elle affiche une forte résistance au vote d'extrême-droite (Bardella -5.42, Maréchal -0.70) comme d'extrême-gauche (Aubry -1.54, Deffontaines -0.36) et concentre ses suffrages sur les listes des partis de centre-gauche (Glucksmann +2.81), de centre-droit (Hayer +3.59) ainsi que les écologistes (Toussaint +1.45, Governatori +0.18)
+
+La **région Ile-de-France (IF)** forme la troisième région, caractérisée par une résistance générale au vote d'extrême droite et une performance exceptionnellement élevée de la liste LFI portée par Aubry. Elle n'en comporte pas moins de très forts contrastes internes.
+
+- la **sous-région IF1 de type métropolitain central** regroupe Paris, les Hauts-de Seine, les Yvelines et le Val-de-Marne dans une catégorie caractérisée par le partage des votes entre listes des partis de gouvernement de centre-gauche (Glucksman +3.81) et de centre-droit (Hayer +3.38) ainsi que par des scores très élevés pour la liste LFI (Aubry +8.3), les écologistes (Toussaint +2.8) et la droite classique (Bellamy +3.4) ou les formes d'extrême-droite élitiste (Maréchal +0.70). 
+- la **sous-région IF2 de type métropolitain périphérique** regroupe les départements de grande couronne du Val d'Oise, de l'Essonne et de Seine-et-Marne avec un rejet du rassemblement national beaucoup moins marqué (-5.4) et un vote toujours plus important pour la liste LFI de M. Aubry (+9.55). Les partis centristes ont désormais des scores légèrement plus faibles que leur moyenne nationale. 
+- la **sous-région IF3 de type bastion LFI** se limite à l'unique département de Seine-Saint-Denis dont la caractéristique unique est le score exceptionnel de la liste Aubry (+28.8) et à un degré bien moindre des écologistes (Toussaint +1.75) et communistes (Deffontaines +0.29)
 :::
 
 ## Discussion
 
-Quels sont les apports respectifs des deux approches de régionalisation et de classification ?
+Quels sont les apports respectifs des deux approches de régionalisation et de classification à cette échelle d'agrégation départementale ?
 
 ### Intérêt et limites de la classification
 
@@ -1421,19 +1441,16 @@ L'analyse de la régionalisation possède les mêmes propriétés de regroupemen
 
 La limite de l'analyse tient ici au poids de la contrainte de contiguïté qui oblige à regrouper les entités à l'intérieur d'un ensemble d'unités voisines même lorsqu'elles sont séparées par des discontinuités extrêmement élevées. Ce qui aboutit à une hétérogénéité parfois très élevé des entités regroupées.
 
-### Autocorrélation et diffusion spatiale des comportements électoraux
 
-Finalement le choix de l'une ou l'autre méthode dépend des hypothèses que l'on formule sur l'origine et les conséquences de l'autocorrélation spatiale des comportements électoraux.
 
--   Si l'on suppose que les causes du votes sont principalement d'ordre social et liées à des causes individuelles qui ne dépendent pas de la localisation géographique, alors la classification semble la solution la plus logique. Une fois identifiées les classes correspondant à tel ou tel type de comportement électoral, on pourra les mettre en rapport avec d'autres attributs des lieux tels que la richesse des habitants, les modes d'habitat, l'accessibilité au services, etc.
 
--   Si l'on suppose au contraire que les comportements électoraux de propagent dans l'espace à la faveur de processus d'imitation ou d'identification, alors il semble pertinent de regrouper des lieux proches en région qui sont susceptibles de voir leurs attitudes électorales converger au cours du temps. La régionalisation est alors un outil pertinent de prospective ou de stratégie.
+
 
 # Échelle des circonscriptions : gradients urbains ou discontinuités ?
 
-La reproduction des analyses précédentes au niveaux des 535 circonscriptions législatives constitue de prime abord un avantage puisque ces unités spatiales ont des populations beaucoup plus proches entre elles que les départements. La loi impose en effet des seuils miniumum et maximum de population à ces unités afin d'assurer une représentation équitable des citoyens à l'Assemblee Nationale. Malgré les exceptions (départements peu peuplés ayant au moins un député) et les manipulations de limites pour favoriser tel ou tel parti (*gerrymandering*),les circonscriptions sont un cadre idéal d'observation des résultats des élections européennes ... surtout lorsqu'elles sont suivies d'une dissolution de l'Assembléen Nationale comme ce fut le cas en 2024.
+La reproduction des analyses précédentes au niveaux des 535 circonscriptions législatives constitue de prime abord un avantage puisque ces unités spatiales ont des populations beaucoup plus proches entre elles que les départements. La loi impose en effet des seuils minimum et maximum de population à ces unités afin d'assurer une représentation équitable des citoyens à l'Assemblée Nationale. Malgré les exceptions (départements peu peuplés ayant au moins un député) et les manipulations de limites pour favoriser tel ou tel parti (*gerrymandering*),les circonscriptions sont un cadre idéal d'observation des résultats des élections européennes ... surtout lorsqu'elles sont suivies d'une dissolution de l'Assemblée Nationale comme ce fut le cas en 2024.
 
-Ce changement d'échelle entraîne toutefois un saut de complexité dans l'analyse puisque les oppositions entre les espaces ruraux, périurbain et métropolitain qui étaient encore peu visibles à l'échelle d'observation des départements sont désormais fondamentaux et créent pour beaucoup de partis politiques des distribution en "peau de léopard" composés de taches isoles (e.g.liste LFI présente surtout en ville) ou de nappes percées de trous (e.g. vote RN majoritaire dans les zones rurales et fortement réduit dans les métropoles). La question est alors de savoir si la transition entre espaces métropolitains et ruraux s'opère de façon graduelle (hypothèse du gradient d'urbanité) ce qui autoriserait la création de régions de proche en proche. Ou si on passe brutalement d'un comportement à un autre ce qui ferait des métropoles des enclaves bien délimitées cernées par des discontinuités.
+Ce changement d'échelle entraîne toutefois un saut de complexité dans l'analyse puisque les oppositions entre les espaces ruraux, périurbain et métropolitain qui étaient encore peu visibles à l'échelle d'observation des départements sont désormais fondamentales et créent pour beaucoup de partis politiques des distributions en "peau de léopard" composées de taches isolées (e.g. liste LFI présente surtout en ville) ou de nappes percées de trous (e.g. vote RN majoritaire ou largement en tête dans les zones rurales et fortement réduit dans les métropoles). La question est alors de savoir si la transition entre espaces métropolitains et ruraux s'opère de façon graduelle (hypothèse du gradient d'urbanité) ce qui autoriserait la création de régions de proche en proche. Ou si on passe brutalement d'un comportement à un autre ce qui ferait des métropoles des enclaves bien délimitées cernées par des discontinuités.
 
 Une carte publiée par O. Finance dans Cybergeo à propos du premier tour des élections présidentielle de 2022 à l'échelle des intercommunalités montre clairement l'existence d'une double structure à la fois régionale et métropolitaine :
 
@@ -1446,7 +1463,7 @@ L'auteur précise que la carte combine en fait des variables de niveau (structur
 
 > Cette carte a été construite à l’aide d’une Classification Ascendante Hiérarchique. Elle synthétise 9 variables décrivant la structure du vote en 2022 (abstention, vote blanc, vote pour chaque famille politique) et 9 variables similaires décrivant l’évolution du vote entre 2017 et 2022. Ces variables sont toutes standardisées et décrivent donc pour les 9 premières des écarts par rapport au vote de l’ensemble des intercommunalités, pour les 9 suivantes des variations positives ou négatives par rapport à l’évolution constatée au niveau de l’ensemble des intercommunalités. Source : Finance O., 2022, [Cybergeo Conversation](https://cybergeo.hypotheses.org/1199)
 
-La structure obtenue combine à la fois un archipel métropolitain (classe représentée en rouge) et des blocs régionaux bien identifiables indiquant une forte auto-corrélation spatiale des votes dans les espaces non métropolitains.
+La structure obtenue combine à la fois un archipel métropolitain (classe représentée en rouge) et des blocs régionaux bien identifiables indiquant une forte autocorrélation spatiale des votes dans les espaces non métropolitains.
 :::
 
 ## Matrice de dissimilarité
@@ -1511,11 +1528,11 @@ Pour mieux visualiser les zones urbaines, on peut créer une carte par anamorpho
 # Construction du cartogramme en fonction du nombre de votants
 cartogram_R <- cartogramR(mapdon_circ,
                           count = "vot",
-                          method = "dcn",
-                          options = list(L = 4096, maxit = 200))$cartogram |>
+                          method = "dcn")$cartogram |>
                 st_as_sf()
 
-
+### CG to HP : j'ai supprimé les options qui provoquaient une erreur ###
+                
 # Jointure cartogramme et résultats de vote
 cartogram_circ <- left_join(cartogram_R, don_circ)
 
@@ -1566,7 +1583,7 @@ barplot(rev(cah$height)[1:15],
         cex.names = 0.6)
 ```
 
-La cartographie de ces classes met en évidence une coupure évidente entre les espaces métropolitains et les espaces périphériques, cahcun d'entre eux se subdivisant ensuite en deux sous-types.
+La cartographie de ces classes met en évidence une coupure évidente entre les espaces métropolitains et les espaces périphériques, chacun d'entre eux se subdivisant ensuite en deux sous-types.
 
 ```{r classification_circ_map}
 #| out.width: 100%
@@ -1652,7 +1669,7 @@ kable(mat[1:13, ], digits = 2)
 
 ## Régionalisation
 
-Comme on peut le constater, cette configuration des classes est a priori très défavorable à la constitution de régions sauf à fusionner les différents types mis en évidence par la classification. La carte des discontinuités entre les circonscriptions confirme l'existence de très fortes différences entre les zones urbaines et les espaces périurbainsou ruraux qui les entourent.
+Comme on peut le constater, cette configuration des classes est a priori très défavorable à la constitution de régions sauf à fusionner les différents types mis en évidence par la classification. La carte des discontinuités entre les circonscriptions confirme l'existence de très fortes différences entre les zones urbaines et les espaces périurbains ou ruraux qui les entourent.
 
 ```{r disc_map_circo}
 #| out-width: 80%
@@ -1698,9 +1715,9 @@ plot(regio,
      cex = 0.7)
 # ---
 
-# B. Hiérarchie des noeuds
+# B. Hiérarchie des nœuds
 barplot(rev(regio$height)[1:20],
-        main = "Hiérarchie des noeuds",
+        main = "Hiérarchie des nœuds",
         names.arg = 1:20,
         cex.names = 0.4)
 ```
@@ -1740,9 +1757,125 @@ mf_map(cartogram_R, var="reg11",type="typo", leg_title = "Classes", lwd=0.4)
 mf_layout("11 régions",credits = "", scale=T, frame=T, arrow=F)
 ```
 
-Sans reprendre en détail l'analyse des profils de classe, on voit que la régionalisation en cinq classes est assez proche des résultats obtenus à l'échelle des départements. On retrouve en effet la singularité de l'Ile de France, de la Seine-Saint-Denis, de l'Ouest et dunord du bassin parisien. Quant à la régionalisation en 11 classes, elle met en valeur la singularité des trois plus grandes métropoles provinciales (Lille, Lyon, Marseille) ainsi qu les spécificiés du Sud-Ouest et des Alpes.
+Sans reprendre en détail l'analyse des profils de classe, on voit que la régionalisation en cinq classes est assez proche des résultats obtenus à l'échelle des départements. On retrouve en effet la singularité de l'Ile-de-France, de la Seine-Saint-Denis, de l'Ouest et de la partie nord du Bassin Parisien. Quant à la régionalisation en onze classes, elle met en valeur la singularité des grandes métropoles provinciales de Lille et Lyon (mais pas Marseille) ainsi que les spécificités du Sud-Ouest et des Alpes.
 
 Le changement d'échelle ne modifie donc pas radicalement les conclusions obtenues au niveau départemental puisque les métropoles de taille moyenne (Rennes, Nantes, Bordeaux, Toulouse, Strasbourg, ...) sont absorbées par les circonscriptions voisines. Seules les métropoles de taille suffisante pour se subdiviser en plusieurs circonscriptions législatives arrivent à émerger comme régions à cette échelle.
+
+
+# Conclusion générale
+
+
+Comme toutes les informations spatiales, les données électorales sont très sensibles au choix du niveau d'agrégation et au problème de l'unité spatiale modifiable (*Modifiable Area Unit Problem* ou *MAUP*). Mais la multiplicité des niveaux d'agrégation et des échelles observation ne doit-elle pas être considéré comme un progrès plutôt qu'un problème (@madelin2009) ?
+
+## La trace de régions fantômes
+
+Le fait que les régionalisations et classifications apportent des résultats assez voisins aux échelles d'observation régionale et départementale mais très différents au niveau des circonscriptions (ou des communes et des bureaux de votes) est en soi un résultat intéressant. Il suggère que si l'on mélange les comportements urbains, périurbains et ruraux (ce qu'autorise précisément le niveau départemental) on peut encore reconnaître le contour de vastes entités territoriales issues des temporalités longues de l'histoire économique sociale et culturelle :  *Grand Ouest catholique*, *Nord-Est ouvrier*, *Méditerranée protestataire*, *Sud-Ouest radical-socialiste*, ... Il ne s'agit pas ici de reproduire ddes explications simplistes fondées sur des corrélations écologiques douteuses avec des déterminants de type anthropologique (@lebras2013) ou économique (@piketty2023). Mais plutôt de chercher la trace de frontières fantômes et de suivre leur permanence, leur déplacement et leur éventuel effacement sans vouloir à tout prix les relier à une cause ultime (@von2019phantom). Ne pas considérer en somme que la maille d'observation la plus petite est nécessairement la plus intéressante comme le montre les errements des analyses communales de la "fracture sociale" ou de la "France périphérique" (@guilluy2024).
+
+## Des discontinuités intrarégionales
+
+L'échec relatif des méthodes de régionalisation à rendre compte des différenciations électorales au niveau des circonscriptions semble moins lié au niveau d'agrégation qu'à l'espace de référence retenu. Compte tenu de la force des oppositions entre espace urbains, périurbains et ruraux, il était prévisible que les méthodes de régionalisation échoueraient à fournir une descfription pertinente de la France entière sauf à utiliser un nombre très élevé de classes. La classification offre clairement ici une solution meilleure.
+
+Mais le problème se poserait différemment si l'on avait gardé le niveau d'agrégation des circonscriptions mais limité l'espace d'étude à une seule région et tout particulièrement dans le cas des régions fusionnées issues de la réforme de 2015 (*Hauts de France, Grand Est, Occitanie, Auvergne-Rhône-Alpes, ...*). L'exemple de l'Occitanie montre que la régionalisation du vote en trois ou sept classes fait clairement apparaître la singularité des deux anciennes capitales régionales (Toulouse et Montpellier) mais aussi de fortes différences de comportement électoral entre les circonscriptions des deux anciennes régions.
+
+```{r regio_occitanie, echo=FALSE}
+
+
+# Chargement des résultats par circonscription et d'un fond de carte
+map_circ <- readRDS("data/net/map_circ.RDS") |> filter(regi=="76")
+don_circ <- readRDS("data/net/don_circ.RDS") |> filter(regi=="76")
+
+# Calcul répartition % de vote par circonscription pour chaque liste
+result_vote_circ <- don_circ[, 12:49]
+mat_vote_circ <- 100 * result_vote_circ / apply(result_vote_circ, 1, sum) 
+rownames(mat_vote_circ) <- don_circ$circ
+colnames(mat_vote_circ) <- listes$tete_nom
+
+# Dissimilarité
+dissim <- dist.ldc(mat_vote_circ, method = "manhattan") / 2
+
+# Jointure fond de carte et résultat de vote
+mapdon_circ <- left_join(map_circ, don_circ)
+
+# Matrice de contiguïté
+mat_conti <- st_intersects(mapdon_circ, mapdon_circ, sparse = FALSE)
+colnames(mat_conti) <- mapdon_circ$circ
+rownames(mat_conti) <- mapdon_circ$circ
+
+# Suppression de la moitié de la matrice (et de la diagonale)
+mat_conti[lower.tri(mat_conti, diag = TRUE)] <- FALSE
+
+# Construction d'un tableau de lien (i, j) de contiguïté
+circ_link_contig <- as.data.frame.table(mat_conti, responseName = "contig") |> 
+                             filter(contig == TRUE)
+
+# Création de la couche géographique de liens
+circ_links_contig  <- mf_get_links(x = mapdon_circ, 
+                                  df = circ_link_contig, 
+                                  x_id = "circ", 
+                                  df_id = c("Var1","Var2"))
+     
+# Cartographie
+#mf_map(mapdon_circ,col="lightyellow")
+#mf_map(circ_links_contig , col = "red3", add = TRUE)
+#mf_layout("Matrice de contiguïté des circonscriptions", credits = "Grasland C., 2025")
+
+# Régionalisation ascendante hiérarchique
+regio <- constr.hclust(d = dissim, method = "ward.D", links = circ_link_contig)
+
+# A. Arbre de classification
+#plot(regio,
+#     main = "Arbre de classification",
+#     hang = -1,
+#     cex = 0.7)
+
+
+# B. Hiérarchie des nœuds
+
+
+mapdon_circ$reg7 <- as.factor(cutree(regio, 7))
+mapdon_circ$reg3 <- as.factor(cutree(regio, 3))
+mapdon_circ$regold<-mapdon_circ$dept %in% c("30","34","66","48","11")
+mapreg<-mapdon_circ %>% group_by(regold) %>% summarise()
+
+
+
+
+
+
+```
+
+
+
+
+
+```{r map_occitanie, echo=FALSE}
+#| out.width: 100%
+#| layout: [[50,50]]
+
+mf_map(mapdon_circ, var="reg3",type="typo", leg_title = "Classes", lwd=0.4)
+mf_map(mapreg,type="base",col=NA, border="red",lwd=2, add=TRUE,lty=2)
+mf_layout("Occitanie en 3 régions",credits = "", scale=T, frame=T, arrow=F)
+
+# ---
+
+mf_map(mapdon_circ, var="reg7",type="typo", leg_title = "Classes", lwd=0.4)
+mf_map(mapreg,type="base",col=NA, border="red",lwd=2, add=TRUE,lty=2)
+mf_layout("Occitanie en 7 régions",credits = "", scale=T, frame=T, arrow=F)
+```
+
+Il n'est pas besoin ici de faire appel à un processus de diffusion pour expliquer des différences de comportements politiques qui peuvent s'expliquer par plus de trois décennies d'appartenance à des régions ayant connu des évolutions politiques différrentes.
+
+
+
+### Autocorrélation spatiale et territoriale des comportements électoraux
+
+Finalement le choix de l'une ou l'autre méthode dépend des hypothèses que l'on formule sur l'origine et les conséquences de l'autocorrélation spatiale des comportements électoraux.
+
+-   Si l'on suppose que les causes du vote sont principalement d'ordre social et liées à des causes individuelles qui ne dépendent pas de la localisation géographique, alors la classification semble la solution la plus logique. Une fois identifiées les classes correspondant à tel ou tel type de comportement électoral, on pourra les mettre en rapport avec d'autres attributs des lieux tels que la richesse des habitants, les modes d'habitat, l'accessibilité aux services, etc.
+
+-   Si l'on suppose au contraire que les comportements électoraux se propagent dans l'espace à la faveur de processus d'imitation ou d'identification, alors il semble pertinent de regrouper des lieux proches en région qui sont susceptibles de voir leurs attitudes électorales converger au cours du temps. La régionalisation est alors un outil pertinent de prospective ou de stratégie.
+
+
 
 # Bibliographie {#bibliographie .unnumbered}
 
@@ -1850,7 +1983,7 @@ Nous allons extraire du fichier électoral les variables générales de cadrage 
 
 x <- read.csv2("data/raw/resultats-definitifs-par-circonscription.csv")
 
-# Modification du code des circonscriptions popur adéquation avec les fonds de carte
+# Modification du code des circonscriptions pour adéquation avec les fonds de carte
 z <- x$Code.circonscription.législative
 x$circ <- paste0(substr(z, 1, 2), "0", substr(z, 3, 4))
 
