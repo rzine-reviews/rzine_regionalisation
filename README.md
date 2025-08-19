@@ -1,12 +1,12 @@
-# Titre fiche  [<img src="https://rzine.fr/assets/img/rzine.png"  align="right" width="120"/>](http://rzine.fr/)
+# Titre fiche [<img src="https://rzine.fr/img/Rzine_logo.png"  align="right" width="120"/>](http://rzine.fr/)
 ### Sous-titre fiche
-**Claude Grasland (Université Paris Cité, UMR 8504 Géographie-cités)**
+**Auteur.e.s (affiliation.s)**
 <br/>  
 
 Résumé de la fiche....
 
 
-Pour la consulter, cliquez [**ici**](https://rzine.fr/docs/........./index.html)
+Pour la consulter, cliquez [**ici**](https://rzine-reviews.github.io/rzine_regionalisation/)
 
 <br/>  
 
