@@ -16,6 +16,8 @@ knitr::opts_chunk$set(echo=TRUE,
 
 # Introduction  {.unnumbered}
 
+## Classification  et régionalisation
+
 Les géographes français qui sont confrontés à l'analyse d'un ensemble de variables décrivant un ensemble de lieux vont le plus souvent procéder à une analyse en deux étapes combinant analyse factorielle et classification ascendante hiérarchique (CAH). Si les variables sont hétérogènes (différentes unités de mesure) ils utiliseront une analyse en composantes principales sur le tableau des variables standardisées suivi d'une CAH en métrique euclidienne. Si les variables forment un tableau de contingence, il pourront appliquer les méthode précédentes sur un tableau de profils en ligne (standardisés ou non) ou bien opter pour le couplage entre analyse factorielle des correspondances et classification ascendante hiérarchique en métrique du chi-2. Ces approches qui s'inscrivent dans la tradition de l'analyse des données "*à la française*" ont été formalisées initialement par les travaux de @benzecri1973, puis popularisés en géographie par l'ouvrage de @sanders1989 et finalement mis à la disposition d'un large public grâce à l'excellent package FactomineR [@lê2008] et les publications de ses auteurs, notamment @husson2016. Les avantages du couplage entre les deux approches sont évidents puisque les méthodes factorielles permettent d'analyser d'abord les corrélations entre les colonnes du tableaux avant de procéder au regroupement des lignes à l'aide de la CAH [@husson2010].
 
 Sans remettre en cause l'intérêt de ces approches, nous souhaiterions proposer ici une autre forme de couplage de méthodes statistiques associant **classification** et **régionalisation**, issue des travaux des écologues qui s'intéressent aux associations spatiales de plantes ou d'animaux et cherchent à en mesurer l'abondance, la spécialisation et la diffusion [@legendre1989, @legendre2013]. Si le point de départ est le même (tableau croisant des lieux décrits par un ensemble de variables), les analyses vont ici surtout porter sur des tableaux homogènes décrivant soit l'abondance de différentes espèces (tableau de contingence), soit leur présence/absence (tableau disjonctif complet). Et surtout elles vont ajouter un élément supplémentaire sous la forme d'une matrice de proximité décrivant généralement la contiguïté des lieux sous la forme d'un **graphe de voisinage**. La procédure de régionalisation mise au point récemment avec la fonction `constr.hclust()`du package `adespatial` suit le schéma suivant (@fig-shema) :
@@ -31,13 +33,53 @@ knitr::include_graphics("figures/Legendre_regionalisation.jpg")
 
 Il s'agit donc d'une méthode de classification ascendante hiérarchique comparable à celles réalisables en langage `R-Base` (fonction `hclust()`) ou dans `FactoMineR` (fonction `HCPC()`) mais avec deux différences importantes. D'une part, l'ajout de la contrainte de contiguïté limite les possibilités de fusion des unités spatiales. D'autre part, il est possible d'utiliser un grand nombre de fonctions de dissimilarités en entrée, sans se limiter à celles qui sont privilégiées par les méthodes d'analyse factorielle à la française. Les écologues considèrent en effet que la distance euclidienne (normée ou non) et la distance du chi-2 ne sont pas toujours les plus pertinentes pour mesurer les ressemblances entre lieux, surtout si l'on considère leur caractère généralement non gaussien.
 
-L'objectif du présent article est de discuter l'intérêt de cette procédure pour l'analyse géographique de tableaux de contingence dont les lignes sont des lieux et les colonnes des attributs dont la somme en ligne a un sens. Nous avons retenu comme exemple d'application les résultats des élections européennes de 2024 en examinant les résultats à trois niveaux d'agrégation : les régions administratives, les départements et les circonscriptions législatives (cf. [partie suivante](#données-utilisées)). Pour éviter une répétition, chaque niveau d'analyse sera dédié à un aspect différent du problème général de comparaison des approches de régionalisation et de classification :
+
+## Un exemple pédagogique classique ...
+
+L'objectif du présent article est de discuter l'intérêt de cette procédure pour l'analyse géographique de tableaux de contingence dont les lignes sont des lieux et les colonnes des attributs dont la somme en ligne a un sens. Nous avons retenu comme exemple d'application les résultats des élections européennes de 2024 en examinant les résultats à trois niveaux d'agrégation : les régions administratives, les départements et les circonscriptions législatives (cf. [partie suivante](#données-utilisées)). 
+
+Pour éviter une répétition, chaque niveau d'analyse sera dédié à un aspect différent du problème général de comparaison des approches de régionalisation et de classification :
 
 -   **L'échelle régionale** sera utilisé pour rappeler les principes de base des méthodes de classification et de régionalisation en insistant sur le rôle déterminant du choix de la matrice de dissimilarité utilisée en entrée.
 
 -   **L'échelle départementale** constituera le niveau privilégié de comparaison des résultats des méthodes de classification et de régionalisation afin de voir leurs apports respectifs à la compréhension du phénomène.
 
 -   **L'échelle des ciconcriptions** permettra d'examiner l'intérêt d'une approche multiscalaire et de souligner les difficultés de la régionalisation lorsque le phénomène change de nature en fonction du niveau d'agrégation.
+
+
+L'exemple des données électorales avait été initialement choisi pour des raisons pédagogiques (agrégation à différentes échelles, nombre élevé de listes, intérêt des lecteurs pour un sujet d'actualité, ...). Il est en effet très classique pour les enseignants de géographie dite "quantitative" d'illustrer les cours d'analyse des donnés par des tableaux de résultats électoraux en utilisant successivement une analyse factorielle et une classification ascendante hiérarchique. Dans une publication de la revue Feuilles de Géographie intitulée "*1995 : les élections présidentielles et la fracture sociale où les jubilations des géographes quantitativistes*", les auteures justifient ainsi le choix de l'exemple retenu : 
+
+
+:::: {.columns}
+::: {.column width=40% .r-fit-text}
+> "Car depuis A. Siegfried, Les Brouillons Dupont et Theo Quant, quand un géographe  "quantitativiste" rencontre *Le Monde* daté du surlendemain du scrutin, c'est tout de suite le coup de foudre: et que je t'achète, et que je te feuillette frenétiquement, et que je m'extasie devant tel score et que je pleure devant tel autre, et que je saisis le tableau de données et que je sors les analyses,... et - oh suprême récompense - que je cartographie les plus "beaux" résultats. A chaque nouveau scrutin c'est un éternel recommencement ! Alors, vous pensez : quand, par bonheur, les élections présidentielles surviennent avant la session d'examen de Juin, c'est l'EU - PHO - RIE ! Imaginez 96 départements et 9 candidats : toutes ces combinaisons ! Vertigineux, non ?" @baron1995
+:::
+
+::: {.column width=60% .r-fit-text}
+```{r fig-baron}
+#| echo: false
+#| out.width: "60%"
+#| fig-align: 'center'
+#| fig-cap: '1995 : les élections présidentielles et la fracture sociale où les jubilations des géographes quantitativistes (Baron & Emsellem, 1995 )'
+
+knitr::include_graphics("figures/baron1995.png")
+```
+
+:::
+::::
+
+
+
+
+
+## ... mais soulevant des questions théoriques nouvelles
+
+
+
+
+
+
+
 
 ## Données utilisées {.unnumbered}
 
