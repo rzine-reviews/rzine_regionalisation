@@ -22,11 +22,11 @@ Les géographes français qui sont confrontés à l'analyse d'un ensemble de var
 
 Sans remettre en cause l'intérêt de ces approches, nous souhaiterions proposer ici une autre forme de couplage de méthodes statistiques associant **classification** et **régionalisation**, issue des travaux des écologues qui s'intéressent aux associations spatiales de plantes ou d'animaux et cherchent à en mesurer l'abondance, la spécialisation et la diffusion [@legendre1989, @legendre2013]. Si le point de départ est le même (tableau croisant des lieux décrits par un ensemble de variables), les analyses vont ici surtout porter sur des tableaux homogènes décrivant soit l'abondance de différentes espèces (tableau de contingence), soit leur présence/absence (tableau disjonctif complet). Et surtout elles vont ajouter un élément supplémentaire sous la forme d'une matrice de voisinage décrivant généralement - mais pas toujours - les relations entre lieux sous la forme d'un **graphe de contiguïté** de type planaire.
 
-::: {.alert .alert-success role="alert"}
+
 
 ```{r fig-voisinage}
 #| echo: false
-#| out.width: "95%"
+#| out.width: "60%"
 #| fig-align: 'center'
 #| fig-cap: 'Différentes formes de graphe de voisinage (source : R-Spatial)'
 
@@ -34,7 +34,7 @@ knitr::include_graphics("figures/weights.png")
 ```
 
 De nombreuses méthodes d'analyse spatiale et d'économétrie tentent de mesurer l'influence exercée ou subie par unité spatiale vis-à-vis des unités proches [@anselin2009, @anselin2022]. Dans le cas des unités de type aréal, la solution la plus simple est la présence d'une frontière commune (*adjacency*) qui aboutit à un graphe de type planaire. Mais bien d'autres solutions sont possibles comme l'illustre l'exemple du Luxembourg décrit dans le document en ligne [R-spatial](https://rspatial.org/raster/analysis/2-scale_distance.html#distance)
-:::
+
 
 
 
@@ -49,23 +49,23 @@ La procédure de régionalisation mise au point récemment avec la fonction `con
 knitr::include_graphics("figures/Legendre_regionalisation.jpg")
 ```
 
-Il s'agit donc d'une méthode de classification ascendante hiérarchique comparable à celles réalisables en langage `R-Base` (fonction `hclust()`) ou dans `FactoMineR` (fonction `HCPC()`) mais avec deux différences importantes. D'une part, l'ajout de la contrainte de contiguïté limite les possibilités de fusion des unités spatiales. D'autre part, il est possible d'utiliser un grand nombre de fonctions de dissimilarités en entrée, sans se limiter à celles qui sont privilégiées par les méthodes d'analyse factorielle à la française. Les écologues considèrent en effet que la distance euclidienne (normée ou non) et la distance du chi-2 ne sont pas toujours les plus pertinentes pour mesurer les ressemblances entre lieux, surtout si l'on considère leur caractère généralement non gaussien.
+Il s'agit donc d'une méthode de classification ascendante hiérarchique comparable à celles réalisables en langage `R-Base` avecla fonction `hclust()` ou dans le package `FactoMineR` avec la fonction `HCPC()`,  mais avec deux différences importantes. D'une part, l'ajout de la contrainte de voisinage limite les possibilités de fusion des unités spatiales, ce qui réduit beaucoup le temps de calcul. D'autre part, il est possible d'utiliser un grand nombre de fonctions de dissimilarités en entrée, sans se limiter à celles qui sont privilégiées par les méthodes d'analyse factorielle à la française. Les écologues considèrent en effet que la distance euclidienne (normée ou non) et la distance du chi-2 ne sont pas toujours les plus pertinentes pour mesurer les ressemblances entre lieux, surtout si l'on considère le caractère généralement non gaussien des distributions statistiques des variables associées.
 
 
-## Un exemple pédagogique classique en géographie quantitative ... {.unnumbered}
+## Un exemple pédagogique en géographie quantitative ... {.unnumbered}
 
-L'objectif du présent article est de discuter l'intérêt de cette procédure pour l'analyse géographique de tableaux de contingence dont les lignes sont des lieux et les colonnes des attributs dont la somme en ligne a un sens. Nous avons retenu comme exemple d'application les résultats des élections européennes de 2024 en examinant les résultats à trois niveaux d'agrégation : les régions administratives, les départements et les circonscriptions législatives (cf. [partie suivante](#données-utilisées)). 
+L'objectif du présent article est de discuter l'intérêt de cette procédure pour l'analyse géographique de tableaux de contingence dont les lignes sont des lieux et les colonnes des attributs dont la somme en ligne a un sens. Nous avons retenu comme exemple d'application l'exploration de la distribution spatiale des votes aux élections européennes de 2024 en France métropolitaine (hors Corse). Nous  examinons les résultats des 38 listes de candidats à trois niveaux d'agrégation : les 12 régions, les 94 départements et les 535 circonscriptions législatives (cf. [partie suivante](#données-utilisées)). 
 
-Pour éviter une répétition, chaque niveau d'analyse sera dédié à un aspect différent du problème général de comparaison des approches de régionalisation et de classification :
+Pour éviter une répétition, chaque niveau d'analyse sera dédié à un aspect différent du problème général de comparaison des approches de régionalisation et de classification et d'analyse de leurs apports à la géographie électorale.
 
--   **L'échelle régionale** sera utilisée pour rappeler les principes de base des méthodes de classification et de régionalisation en insistant sur le rôle déterminant du choix de la matrice de dissimilarité utilisée en entrée.
+-   **L'échelle régionale** sera utilisée pour rappeler les principes de base des méthodes de classification et de régionalisation en insistant sur le rôle déterminant du choix de la matrice de dissimilarité utilisée en entrée. On se limitera ici à la comparaison des résultats des listes conduites par Jordan Bardella et Marion Maréchal.
 
--   **L'échelle départementale** constituera le niveau privilégié de comparaison des résultats des méthodes de classification et de régionalisation afin de voir leurs apports respectifs à la compréhension du phénomène.
+-   **L'échelle départementale** constituera le niveau privilégié de comparaison des résultats des méthodes de classification et de régionalisation afin de voir leurs apports respectifs à la compréhension du phénomène. L'analyse porte sur l'ensemble des listes et vise à mettre à jour de grandes régions homogènes sur le plan électoral comme la France de l'Ouest chère à @siegfried1913 et @goguel1953.
 
--   **L'échelle des circonscriptions** permettra d'examiner l'intérêt d'une approche multiscalaire et de souligner les difficultés de la régionalisation lorsque le phénomène change de nature en fonction du niveau d'agrégation.
+-   **L'échelle des circonscriptions** permettra d'examiner l'intérêt d'une approche multiscalaire et de souligner les difficultés de la régionalisation lorsque le niveau d'agrégation dissocie les entités urbaines, périurbaines et rurale. Peut-on produire une régionalisation pertinente face à une distribution spatiale des résultats électoraux en forme de "peau de léopard" ?
 
 
-L'exemple des données électorales avait été initialement choisi pour des raisons pédagogiques (agrégation à différentes échelles, nombre élevé de listes, intérêt des lecteurs pour un sujet d'actualité, ...). Il est en effet très classique pour les enseignants de géographie dite "quantitative" d'illustrer les cours d'analyse des donnés par des tableaux de résultats électoraux en utilisant successivement une analyse factorielle et une classification ascendante hiérarchique. Dans une publication pédagogique de la revue Feuilles de Géographie intitulée "*1995 : les élections présidentielles et la fracture sociale où les jubilations des géographes quantitativistes*" [@baron1995], les auteures présentent les apports respectifs de l'analyse factorielle et de la classification et justifient ainsi le choix de l'exemple retenu : 
+L'exemple des données électorales avait été initialement choisi pour des raisons pédagogiques (agrégation à différentes échelles, nombre élevé de listes, intérêt des lecteurs pour un sujet d'actualité, ...). Il est en effet très classique pour les enseignants de géographie dite "quantitative" d'illustrer les cours d'analyse des donnés par des tableaux de résultats électoraux par départements, régions ou arrondissements de Paris, en utilisant successivement une analyse factorielle et une classification ascendante hiérarchique. Dans une publication pédagogique de la revue Feuilles de Géographie intitulée "*1995 : les élections présidentielles et la fracture sociale où les jubilations des géographes quantitativistes*" [@baron1995], les auteures présentent les apports respectifs de l'analyse factorielle et de la classification et justifient ainsi le choix de l'exemple retenu : 
 
 
 > "Car depuis A. Siegfried, Les Brouillons Dupont et Theo Quant, quand un géographe  "quantitativiste" rencontre *Le Monde* daté du surlendemain du scrutin, c'est tout de suite le coup de foudre: et que je t'achète, et que je te feuillette frenétiquement, et que je m'extasie devant tel score et que je pleure devant tel autre, et que je saisis le tableau de données et que je sors les analyses,... et - oh suprême récompense - que je cartographie les plus "beaux" résultats. A chaque nouveau scrutin c'est un éternel recommencement ! Alors, vous pensez : quand, par bonheur, les élections présidentielles surviennent avant la session d'examen de Juin, c'est l'EU - PHO - RIE ! Imaginez 96 départements et 9 candidats : toutes ces combinaisons ! Vertigineux, non ?" 
@@ -82,14 +82,15 @@ knitr::include_graphics("figures/baron1995.png")
 
 
 
-## ... mais soulevant des questions théoriques et critiques en géographie électorale {.unnumbered}
+## ... mais faisant débat en géographie électorale et géographie sociale {.unnumbered}
 
-Avec le renouveau de la géographie politique en France [@bussi1998, @riviere2009] et le développement de liens plus étroits entre géographes et politistes [@gombin2014], il n'est toutefois plus possible d'analyser la distribution spatiale des données électorales sans introduire une dimension plus théorique sur la signification des résultats observés. Et en tous les cas il peut sembler choquant de transposer une méthode issue de la biologie aux phénomènes humains sans s'être au préalable assurer de la pertinence du transfert. Ce que souligne à juste titre l'un des rapporteurs du présent article : 
+Avec le renouveau de la géographie politique en France [@bussi1998, @riviere2009] et le développement de liens plus étroits entre géographes et politistes [@bussi2012, @gombin2014], il n'est toutefois plus possible d'analyser la distribution spatiale des données électorales sans introduire une dimension plus théorique sur la signification des résultats observés. Et en tous les cas il peut sembler choquant de transposer une méthode issue de la biologie aux phénomènes humains sans s'être au préalable assurer de la pertinence du transfert. Ce que souligne à juste titre l'un des rapporteurs de la première version de cet article : 
 
->"L’introduction évoque des techniques « issues des travaux des écologues qui s’intéressent aux associations spatiales de plantes ou d’animaux et cherchent à en mesurer l’abondance, la spécialisation et la diffusion », et le résumé de l’article précise qu’une des technique de classification/régionalisation présentée dans l’article « s’appuie sur un corpus théorique d’analyse spatiale de la biodiversité des espaces animales ou végétales que l’on peut transposer à de nombreux problèmes géographiques », mais on aimerait en savoir un peu plus sur ce corpus théorique, et sur les « problèmes géographiques » que l’on peut traiter ainsi. En effet et au plan épistémologique, la question de la diffusion telle que traitée en biogéographie et celle des effets de contexte sur la formation des opinions en géographie électorale (pour reprendre le champ thématique de l’article) peuvent difficilement être abordées de la même manière, au risque d’une tendance à la naturalisation des dynamiques sociales.st-ce à dire, comme le considère le démographe H. Le Bras [@lebras2002], que les opinions se transmette de proche en proche à la manière de lois de l’épidémiologie ? Si c’est l’idée que souhaite défendre l’auteur (ce qui est tout à fait possible, il existe une littérature de sociologie anglophone sur les « conversion par la conversation ») et dans l’esprit des précautions de Bourdieu & Passeron « la fausse neutralité des techniques » (@bourdieu2005), alors il faut aller plus loin dans l’explicitation des implications théoriques des deux techniques discutées (**Jean Rivière, 2025**)"
+>"L’introduction évoque des techniques « issues des travaux des écologues qui s’intéressent aux associations spatiales de plantes ou d’animaux et cherchent à en mesurer l’abondance, la spécialisation et la diffusion », et le résumé de l’article précise qu’une des technique de classification/régionalisation présentée dans l’article « s’appuie sur un corpus théorique d’analyse spatiale de la biodiversité des espaces animales ou végétales que l’on peut transposer à de nombreux problèmes géographiques », mais on aimerait en savoir un peu plus sur ce corpus théorique, et sur les « problèmes géographiques » que l’on peut traiter ainsi. En effet et au plan épistémologique, la question de la diffusion telle que traitée en biogéographie et celle des effets de contexte sur la formation des opinions en géographie électorale (pour reprendre le champ thématique de l’article) peuvent difficilement être abordées de la même manière, au risque d’une tendance à la naturalisation des dynamiques sociales. Est-ce à dire, comme le considère le démographe H. Le Bras [@lebras2002], que les opinions se transmette de proche en proche à la manière de lois de l’épidémiologie ? Si c’est l’idée que souhaite défendre l’auteur (ce qui est tout à fait possible, il existe une littérature de sociologie anglophone sur les « conversion par la conversation ») et dans l’esprit des précautions de Bourdieu & Passeron « la fausse neutralité des techniques » [@bourdieu2005], alors il faut aller plus loin dans l’explicitation des implications théoriques des deux techniques discutées (**Jean Rivière, Mai 2025**)"
 
-Le choix d'une méthode de classification ou de régionalisation pour étudier la répartition des comportements électoraux n'est donc pas neutre car il conditionne l'interprétation même des résultats en termes de processus de formation des opinions. On retrouve en fait ici les termes de la controverse qui oppose G. Tarde et E. Durkheim dans le fameux chapitre 4 du *Suicide* [@durkheim1897] et qui est illustré par la fameuse carte du taux de suicide par arrondissements : 
+Le choix d'une méthode de classification ou de régionalisation pour étudier la répartition des comportements électoraux n'est donc pas neutre car il conditionne l'interprétation même des résultats en termes de processus de formation des opinions. La classification ne fait en effet pas d'hypothèse a priori sur les déterminants contextuels du vote. Alors que la régionalisation postule implicitement l'existence d'une autocorrélation spatiale (similarité des unités de proche en proche, liée par exemple à la diffusion d'une innovation) ou d'une autocorrélation territoriale (similarité des unités liées à leur appartenance à une même maille territoriale et produisant des discontinuités le long des frontières). 
 
+On retrouve en fait ici les termes de la controverse qui opposa G. Tarde et E. Durkheim et que ce dernier discute dans le chapitre 4 du *Suicide* [@durkheim1897].  C'est à l'aide de  la fameuse carte du taux de suicide par arrondissements que Durkheim réfute l'hypothèse diffusioniste dans un texte à bien des égards fondateur pour l'analyse spatiale des phénomènes sociaux [@grasland2010]: 
 
 
 > "En définitive, ce que nous montrent toutes les cartes, c'est que le suicide, loin de se disposer plus ou moins concentriquement autour de certains loyers à partir desquels il irait en se dégradant progressivement, se présente, au contraire, par grandes masses à peu près homogènes (mais à peu près seulement) et dépourvues de tout noyau central. Une telle configuration n'a donc rien qui décèle l'influence de l'imitation […]"
@@ -106,9 +107,9 @@ knitr::include_graphics("figures/durkheim1897.png")
 ```
 
 
-Emile Durkheim ne disposait évidemment pas de l'apport des modèles multi-niveaux ou des techniques de régression géographiquement pondérée qui permettent de séparer les déterminants individuels et contextuels du suicide. Mais il montre très tôt une sensibilité aux échelles d'agrégation (justification des arrondissements plutôt que des départements qui masqueraient les effets urbains). Et surtout suggère que le choix d'une méthode de régionalisation ou de classification implique plutôt dans le premier cas une interprétation structuraliste et dans le second une hypothèse diffusioniste. 
+Emile Durkheim ne disposait évidemment pas de l'apport des modèles multi-niveaux ou des techniques de régression géographiquement pondérée qui permettent de séparer les déterminants individuels et contextuels du suicide. Mais il montre très tôt une sensibilité aux échelles d'agrégation (justification des arrondissements plutôt que des départements qui masqueraient les effets urbains). Il postule très clairement l'existence de "régions" caractérisées par un même "milieu social" jouant le rôle de déterminants dont l'action est bornée par des "limites naturelles" et peut être vu comme un précurseur de @siegfried1913. Tarde, au contraire, annonce les travaux de @hagerstrand1968 sur la diffusion spatiale des innovations et serait un lointain ancêtre des théories du gradient d'urbanité  de @levy2013liens.
 
-Même si ce n'état pas l'objectif initial de cet article, nous aurons donc le souci tout au long de l'analyse de l'exemple des résultats électoraux aux différentes échelles de comparer les résultats des méthodes de classification et de régionalisation en gardant en tête le fait qu'elles reposent sur des hypothèses interprétatives fondamentalement différentes.
+Même si ce n'était pas l'objectif initial de cet article, nous aurons donc le souci tout au long de l'analyse de l'exemple des résultats électoraux aux différentes échelles de comparer les résultats des méthodes de classification et de régionalisation en gardant en tête le fait qu'elles reposent sur des hypothèses interprétatives fondamentalement différentes.
 
 
 ## Données utilisées {.unnumbered}
@@ -884,7 +885,7 @@ reg_links_contig_kvoisins  <- mf_get_links(x = mapdon,
                                            df = mat_contig_kvoisins, 
                                            x_id = "regi_code", 
                                            df_id = c("Var1","Var2"))
-     
+   
 # Cartographie
 mf_map(mapdon, col="lightyellow")
 mf_map(reg_links_contig_kvoisins , col = "red3", add = TRUE)
@@ -898,7 +899,9 @@ Comme on peut le voir sur les cartes ci-dessus, il est possible de produire des 
 
 ### Régionalisation
 
-Comme dans le cas de la classification, il existe de nombreux algorithmes possibles pour regrouper les unités spatiales en cherchant à minimiser les dissimilarités intra-régionales. Nous nous limiterons ici à l'algorithme de régionalisation réalisé par la fonction `constr.hclust()` du package `adespatial` qui présente l'intérêt d'utiliser exactement les mêmes formules de calcul que la fonction `hclust()` de R-base et offre une parfaite possibilité de comparaison des résultats entre les deux approches. Pour éviter de multiplier les exemples, nous nous limiterons ici à l'analyse des régionalisations fondées sur une matrice de contiguïté, en reprenant les trois matrices de dissimilarité précédentes.
+Comme dans le cas de la classification, il existe de nombreux algorithmes possibles pour regrouper les unités spatiales voisines en cherchant à minimiser les dissimilarités intra-régionales. L'un des plus complet est celui du logiciel Geoda (@anselin2009) qui dispose d'une documentation très pédagogique sur chacun des algorithmes de régionalisation disponible [ici](https://geodacenter.github.io/documentation). Malheureusement le package Rgeoda correspondant à l'application principale disponible sous windows n'est pas régulièrement mis à jour et était indisponible au moment de la rédaction de cet article. 
+
+Nous nous limiterons donc ici à l'algorithme de régionalisation réalisé par la fonction `constr.hclust()` du package `adespatial` qui présente l'intérêt d'utiliser exactement les mêmes formules de calcul que la fonction `hclust()` de R-base et offre une parfaite possibilité de comparaison des résultats entre les deux approches. Pour éviter de multiplier les exemples, nous nous limiterons ici à l'analyse des régionalisations fondées sur une matrice de contiguïté, en reprenant les trois matrices de dissimilarité précédentes.
 
 ```{r regionalisation_contig}
 # CAH contrainte - Euclidienne non standardisée
@@ -990,7 +993,7 @@ Comme dans le cas de la classification (cf. [partie 2.4.2](#comparaison-des-clas
 
 ## Conclusion
 
-Au final, cet exercice souligne la complexité des options possibles du fait du nombre de choix qu'il faut opérer pour réaliser une classification et, a fortiori une régionalisation. Encore n'avons-nous pas fait état de l'ensemble des solutions alternatives, notamment celles qui se fondent sur des méthodes de classification descendantes (ref. ???) ou sur des méthodes de type noyaux mobiles.
+Au final, cet exercice souligne la complexité des options possibles du fait du nombre de choix qu'il faut opérer pour réaliser une classification et, a fortiori une régionalisation. Encore n'avons-nous pas fait état de l'ensemble des solutions alternatives, notamment celles qui se fondent sur des méthodes de classification descendantes que l'on trouve dans l'excellent package R [Rainet](https://juba.github.io/rainette/articles/introduction_usage.html) ou sur des méthodes de type noyaux mobiles disponibles dans R-base avec la fonction *kmeans*.
 
 Mais la question la plus fondamentale est probablement la suivante : **quel est l'apport d'une régionalisation par rapport à une classification pour l'analyse d'un phénomène social** ? Puisque nous avons vu qu'une régionalisation est par définition moins efficace qu'une classification pour constituer des groupes homogènes, il faut que la prise en compte des contraintes spatiales apporte un avantage décisif à la régionalisation pour choisir de la mettre en œuvre. Ce qui suppose que la matrice de voisinage ait un sens pour la personne qui va interpréter les résultats.
 
@@ -1653,8 +1656,10 @@ Le profil des quatre classes est assez simple à interpréter puisqu'il s'ordonn
 tabres <- data.frame(mat_vote_circ) 
 tot <- tabres |>  summarise_all(.funs = c("mean"))
 
+
 # Récupération de la classe d'appartenance
 tabres$clas <- clas
+
 
 # Moyenne % vote pour chaque classeclasse
 res <- tabres |> group_by(clas) |> summarise_all(.funs = c("mean"))
@@ -1663,6 +1668,9 @@ res <- tabres |> group_by(clas) |> summarise_all(.funs = c("mean"))
 mat <- res[, -1]
 for (i in 1:5) {mat[i, ] <- mat[i, ] - as.matrix(tot)}
 mat <- as.data.frame(t(mat))
+### Elimine une colonne vide
+mat<-mat[,-5]
+###
 colnames(mat) <- c("Metrop.1", "Metrop.2", "Periph.1", "Periph.2")
 
 # Ajout ligne de totaux
@@ -1783,7 +1791,7 @@ Sans reprendre en détail l'analyse des profils de classe, on voit que la régio
 
 Le changement d'échelle ne modifie donc pas radicalement les conclusions obtenues au niveau départemental puisque les métropoles de taille moyenne (Rennes, Nantes, Bordeaux, Toulouse, Strasbourg, ...) sont absorbées par les circonscriptions voisines. Seules les métropoles de taille suffisante pour se subdiviser en plusieurs circonscriptions législatives arrivent à émerger comme régions à cette échelle.
 
-Ce n'est qu'en poussant la régonalisation à un nombre plus élevé de classes  que l'on voit apparaître successivement les métropoles de rang inférieur comme onpeut le voir dans l'exemple de la régionalisation en  30 classes qui ne modifie guère la structure spatiale en 11 classes mais révèle des isolats de 1 à 5 circonscriptions.
+Ce n'est qu'en poussant la régonalisation à un nombre plus élevé de classes  que l'on voit apparaître  les métropoles de rang inférieur mais aussi des différences internes aux grandes régions liées à des identités régionales d'ordre historique ou culturel. Examinons à titre d'exemple un découpage en trente régions : 
 
 
 ```{r}
@@ -1796,12 +1804,13 @@ mf_map(cartogram_R, var="reg30",type="typo", leg_title = "Classes", lwd=0.4, pal
 mf_layout("30 régions",credits = "", scale=T, frame=T, arrow=F)
 ```
 
+On voit apparître des régions correspondant à la réunion des circonscriptions électorales de Bordeaux, Toulouse, Marseille, Strasbourg, Nantes, Nancy, Metz, ... Mais on repère également une mise en évidence de régions correspondant à l'Alsace et une Bretagne réunifiée incluant la Loire Atlantique. Ces singularités sont sans doute liée à la présence de listes régionalistes qui, bien que correspondant à un pett nombre de vote, suffisent à distinguer ces territoires des espaces environnant. 
 
 ## Discussion
 
 Notre petit exemple pédagogique se limitant à l'échelle encore grossière des circonscriptions, il ne permet pas de prendre parti dans la polémique qui a opposé les spécialistes de géographie électorale autour de la question du gradient d'urbanité [@levy2007] et des déterminants sociaux ou spatiaux du vote dans les espaces périurbains [@ripoll2007]. Le débat entre ces auteurs concernait en effet des analyses à des niveaux d'agrégation plus fins tels que les communes et les données infracommunales par quartiers iris ou bureaux de vote. Les analyses à cette échelle (agrégats de 2000 personnes ou 1000 électeurs environ) modifient drastiquement les configurations spatiales et les corrélations éventuelles entre les variables socio-économiques et les choix politiques [@russo2014].
 
-Pour autant nos analyses de régionalisation présentent l'intérêt théorique de mettre en évidence l'opposition entre des gradients (transition graduelles) et des discontinuités (ruptures brutales entre unités voisines) et de permettre d'identifier des blocs homogènes différents selon le niveau d'agrégation et les limites de la zone d'étude. Une analyse comparative de régionalisation portant sur des aires urbaines de plus de 100 000 habitants décrites par leur bureaux de votes à partir des travaux de @riviere2022 permettrait sans doute d'identifier dans chacune des régions homogènes comportant des enclaves ou exclaves justifiant d'enquêtes ciblées de terrain. De la même manière la réalisation de régionalisations appliquées à des coupes allant des centre-ville vers le rural profond permettrait peut-être d'examiner si les transitions s'opèrent de façon continue - ce que suppose stricto sensu l'idée de gradient - ou si l'on voit apparaître des discontinuités en marche d'escalier séparant des territoires bien différenciés @levy2013liens. Dans les deux cas, la réplication des mêmes algorithmes de régionalisation à des dates successives fournirait une image intéressante des dynamiques de diffusion ou de retraction, plus simple à analyser que la comparaison de classifications. 
+Pour autant nos analyses de régionalisation présentent l'intérêt théorique de mettre en évidence l'opposition entre des gradients (transition graduelles) et des discontinuités (ruptures brutales entre unités voisines) et de permettre d'identifier des blocs homogènes différents selon le niveau d'agrégation et les limites de la zone d'étude. Une analyse comparative de régionalisation portant sur des aires urbaines de plus de 100 000 habitants décrites par leur bureaux de votes à partir des travaux de @riviere2022 permettrait sans doute d'identifier dans chacune des régions homogènes comportant des enclaves ou exclaves justifiant d'enquêtes ciblées de terrain. De la même manière la réalisation de régionalisations appliquées à des coupes allant des centre-ville vers le rural profond permettrait peut-être d'examiner si les transitions s'opèrent de façon continue - ce que suppose stricto sensu l'idée de gradient - ou si l'on voit apparaître des discontinuités en marche d'escalier séparant des territoires bien différenciés confortant les thèses de @levy2013liens. Dans les deux cas, la réplication des mêmes algorithmes de régionalisation à des dates successives fournirait une image intéressante des dynamiques de diffusion ou de retraction, plus simple à analyser que la comparaison de classifications. 
 
 
 
@@ -1912,13 +1921,13 @@ Il n'est pas besoin ici de faire appel à un processus de diffusion pour expliqu
 
 ## Régionaliser l'espace et le temps {.unnumbered}
 
-Selon @boulding1985, le terme de *région* peut désigner aussi bien des découpages de l'espace que des découpages du temps. On pourrait aller plus loin en ajoutant qu'**une régionalisation est un découpage simultané de l'espace et du temps**. Une configuration socio-politique telle que la *France de l'Ouest* décrite tour à tour par Siegfried, Goguel, Frémont, Guermond ou Bussi (@bussi2019) s'inscrit dans une triple dimension sociale, spatiale et temporelle. Son effacement, sa résurgence, ses évolutions de contours et de contenu constituent une séquence dynamique marquée par des transformations brutales ou graduelles. 
+Selon @boulding1985, le terme de *région* peut désigner aussi bien des découpages de l'espace que des découpages du temps. On pourrait aller plus loin en ajoutant qu'**une régionalisation est un découpage simultané de l'espace et du temps**. Une configuration socio-politique telle que la *France de l'Ouest* décrite tour à tour par Siegfried, Goguel, Frémont, Guermond ou Bussi [@bussi2019] s'inscrit dans une triple dimension sociale, spatiale et temporelle. Son effacement, sa résurgence, ses évolutions de contours et de contenu constituent une séquence dynamique marquée par des transformations brutales ou graduelles. 
 
-Plus que l'analyse des niveaux hiérarchiques de régionalisations ou de classification à une date donnée, c'est sans doute du côté des séquences de régionalisations et clssification successives au cours du temps que l'on peut attendre les résultats les plus intéressants. Et c'est sans doute à l'aide de telles séquences que l'on pourra le mieux trancher entre les deux hypothèses structuralistes et diffusionistes et décider s'il vaut mieux utiliser des méthodes de classification ou régionalisation.
+Plus que l'analyse des niveaux hiérarchiques de régionalisations ou de classification à une date donnée, c'est sans doute du côté des séquences de régionalisations et classifications successives à des dates successives que l'on peut attendre les résultats les plus intéressants. Et c'est sans doute à l'aide de telles séquences que l'on pourra le mieux trancher entre les deux hypothèses structuralistes et diffusionistes et décider s'il vaut mieux utiliser des méthodes de classification ou régionalisation.
 
--   Si l'on suppose que les causes du vote sont principalement d'ordre social et liées à des causes individuelles qui ne dépendent pas de la localisation géographique, alors la classification semble la solution la plus logique. Une fois identifiées les classes correspondant à tel ou tel type de comportement électoral, on pourra les mettre en rapport avec d'autres attributs des lieux tels que la richesse des habitants, les modes d'habitat, l'accessibilité aux services, etc.
+-   Si l'on suppose que les causes du vote sont principalement d'ordre social et liées à des causes individuelles ou des jeux d'acteurs qui ne dépendent pas de la localisation géographique, alors la classification semble la solution la plus adaptée. Une fois identifiées les classes correspondant à tel ou tel type de comportement électoral, on pourra les mettre en rapport avec d'autres attributs des lieux tels que la richesse des habitants, les modes d'habitat, l'accessibilité aux services, etc. Et surtout on pourra choisir des terrains d'enquête pour mobiliser des méthodes d'entretien semi-directif ou de questionnaire. 
 
--   Si l'on suppose au contraire que les comportements électoraux se propagent dans l'espace à la faveur de processus d'imitation ou d'identification, alors il semble pertinent de regrouper des lieux proches en région qui sont susceptibles de voir leurs attitudes électorales converger au cours du temps. La permanence d'une même région à plusieurs dates sera alors le signe manifeste d'un effet de contexte agissant sur la longue durée. Tandis que son extension ou sa rétraction confortera l'hypothèse de l'existence de processus de difffusion.
+-   Si l'on suppose au contraire que les comportements électoraux se propagent dans l'espace à la faveur de processus d'imitation ou d'identification ou sont influencées par des structures socio-spatiales relativement pérennes, alors il semble pertinent de regrouper des lieux proches en région qui sont susceptibles de voir leurs attitudes électorales converger au cours du temps. La permanence d'une même région à plusieurs dates sera alors le signe manifeste d'un effet de contexte agissant sur la longue durée. Tandis que son extension ou sa rétraction confortera l'hypothèse de l'existence de processus de difffusion.
 
 
 
@@ -2237,11 +2246,7 @@ mf_layout(
 )
 ```
 
-# Bibliographie {.unnumbered}
 
-<div>
-
-</div>
 
 # Annexes {.unnumbered}
 
