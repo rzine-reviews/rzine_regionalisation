@@ -15,7 +15,7 @@ Pour le consulter, cliquez [**ici**](https://rzine-reviews.github.io/rzine_regio
 
 <br/>  
 
-[![DOI:10.48645/XXXX-XXXX](https://zenodo.org/badge/DOI/10.48645/xxxx-xxxxx.svg)](https://doi.org/10.48645/xxxx-xxxx)
+[![DOI:10.48645/r6ng-wz66](https://zenodo.org/badge/DOI/10.48645/r6ng-wz66.svg)](https://doi.org/10.48645/r6ng-wz66)
 [![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg)](http://creativecommons.org/licenses/by-sa/4.0/)
 
 
