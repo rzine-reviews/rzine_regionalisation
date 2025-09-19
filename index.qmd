@@ -400,8 +400,9 @@ print(round(tab,1))
 
 ```
 
-::: {.alert .alert-success role="alert"}
-**Commentaire** : La liste Bardella obtient une moyenne (non pondérée) de 32.9% dans les 12 régions avec des scores allant de 18.8% en Ile-de-France à 42.7% dans les Hauts-de-France. La liste Maréchal affiche quant à elle des scores de 4.2% en Bretagne à 7.7% en PACA avec une moyenne de 5.3%.
+::: {.callout-note collapse="true"}
+## Commentaire
+La liste Bardella obtient une moyenne (non pondérée) de 32.9% dans les 12 régions avec des scores allant de 18.8% en Ile-de-France à 42.7% dans les Hauts-de-France. La liste Maréchal affiche quant à elle des scores de 4.2% en Bretagne à 7.7% en PACA avec une moyenne de 5.3%.
 
 La variation absolue des résultats, mesurée par l'écart-type est logiquement beaucoup plus forte pour Bardella ($\sigma=6.5$) que pour Maréchal ($\sigma=0.9$). Mais les variations relatives mesurées par le coefficient de variation (rapport entre l'écart-type et la moyenne) sont assez voisines avec 19.9% pour Bardella et 16.7% pour Maréchal.
 :::
@@ -468,8 +469,9 @@ mf_distr(don$Bardella, nbins = 4, bw = sd(don$Bardella))
 mf_distr(don$Marechal, nbins = 4, bw = sd(don$Marechal))
 ```
 
-::: {.alert .alert-success role="alert"}
-**Commentaire** : la distribution des votes Bardella est légèrement dissymétrique à droite avec une valeur exceptionnellement faible correspondant à l'Ile-de-France. La distribution de Maréchal est au contraire dissymétrique à gauche avec une valeur exceptionnellement forte correspondant à la région PACA. La comparaison des deux distributions spatiales ne semble pas révéler à première vue de corrélation positive ou négative, ce qui est confirmé par les coefficients de Pearson ($r=0.20, p =0.53$) ou de Spearman ($\rho =+0.03, p=0.94$).
+::: {.callout-note collapse="true"}
+## Commentaire
+La distribution des votes Bardella est légèrement dissymétrique à droite avec une valeur exceptionnellement faible correspondant à l'Ile-de-France. La distribution de Maréchal est au contraire dissymétrique à gauche avec une valeur exceptionnellement forte correspondant à la région PACA. La comparaison des deux distributions spatiales ne semble pas révéler à première vue de corrélation positive ou négative, ce qui est confirmé par les coefficients de Pearson ($r=0.20, p =0.53$) ou de Spearman ($\rho =+0.03, p=0.94$).
 :::
 
 ## Matrices de dissimilarité
@@ -504,8 +506,9 @@ text(x = don$Bardella,
 grid()
 ```
 
-::: {.alert .alert-success role="alert"}
-**Commentaire** : sur la figure ci-dessus, on a pris soin de construire deux axes orthonormés où une différence d'un point de pourcentage correspond à la même distance horizontalement et verticalement. Il est donc logique que la figure soit beaucoup plus étendue dans le sens horizontal que dans le sens vertical puisque le vote Bardella crée plus de différences entre les régions en valeur absolue que le vote Maréchal
+::: {.callout-note collapse="true"}
+## Commentaire
+Sur la figure ci-dessus, on a pris soin de construire deux axes orthonormés où une différence d'un point de pourcentage correspond à la même distance horizontalement et verticalement. Il est donc logique que la figure soit beaucoup plus étendue dans le sens horizontal que dans le sens vertical puisque le vote Bardella crée plus de différences entre les régions en valeur absolue que le vote Maréchal
 :::
 
 On voit visuellement sur la figure précédente que les points représentant les unités spatiales sont plus ou moins éloignés, la distance qui les sépare étant une mesure de leur dissimilarité en matière de vote pour les deux listes considérées. Deux mesures de distances peuvent alors classiquement être utilisées pour convertir les positions en matrice de distance :
@@ -538,8 +541,9 @@ data.frame(DS_eucl)  |> gt(rownames_to_stub = T) |>
 ```
 
 
-::: {.alert .alert-success role="alert"}
-**Commentaire** : La plus forte dissimilarité est observée entre la région Ile-de-France (IDF) et la région Hauts-de-France (HDFR) et la plus faible entre les régions Centre Val de Loire (CVDL) et Normandie (NORM).
+::: {.callout-note collapse="true"}
+## Commentaire
+La plus forte dissimilarité est observée entre la région Ile-de-France (IDF) et la région Hauts-de-France (HDFR) et la plus faible entre les régions Centre Val de Loire (CVDL) et Normandie (NORM).
 
 En comparant la matrice de dissimilarité au graphique orthonormé précédent, on comprend que les différences entre unités spatiales sont essentiellement produites par les variations du vote Bardella qui possède une plus forte variance que le vote Maréchal. Ce dernier n'introduit que des différenciations secondaires.
 :::
@@ -604,8 +608,9 @@ data.frame(DS_eucl_std) |> gt(rownames_to_stub = T) |>
   fmt_number(decimals = 1)
 ```
 
-::: {.alert .alert-success role="alert"}
-**Commentaire** : Par rapport à la représentation dans l'espace non-standardisé il y a désormais un étirement comparable du nuage de point dans les deux directions de l'espace standardisé. Ce résultat est logique puisque les écart-types sont désormais égaux pour les deux candidats ce qui signifie que les différences liées au vote Maréchal vont jouer le même rôle que celles liées au vote Bardella. Les deux unités spatiales les plus différentes ne sont plus l'Ile-de-France (IDF) et les Hauts-de-France (HDFR) mais la Bretagne (BRET) et la région Provence-Alpes-Côte d'Azur (PACA). Ce que l'on peut facilement vérifier en calculant la distance euclidienne sur variables standardisées.
+::: {.callout-note collapse="true"}
+## Commentaire
+Par rapport à la représentation dans l'espace non-standardisé il y a désormais un étirement comparable du nuage de point dans les deux directions de l'espace standardisé. Ce résultat est logique puisque les écart-types sont désormais égaux pour les deux candidats ce qui signifie que les différences liées au vote Maréchal vont jouer le même rôle que celles liées au vote Bardella. Les deux unités spatiales les plus différentes ne sont plus l'Ile-de-France (IDF) et les Hauts-de-France (HDFR) mais la Bretagne (BRET) et la région Provence-Alpes-Côte d'Azur (PACA). Ce que l'on peut facilement vérifier en calculant la distance euclidienne sur variables standardisées.
 :::
 
 ### Espace des variables ordinales
@@ -664,8 +669,9 @@ data.frame(DS_Man_rnk) |> gt(rownames_to_stub = T) |>
   fmt_number(decimals = 0)
 ```
 
-::: {.alert .alert-success role="alert"}
-**Commentaire** : On trouve désormais une distance maximale de 20 qui place à égalité la paire IDF-HDFR (plus forte distance euclidienne brute) que la paire BRET-PACA (plus forte distance euclidienne standardisée) Cette troisième solution offre donc ici une sorte de compromis entre les deux précédentes, même si elle est en réalité plus proche de la méthode standardisée que de la méthode brute.
+::: {.callout-note collapse="true"}
+## Commentaire
+On trouve désormais une distance maximale de 20 qui place à égalité la paire IDF-HDFR (plus forte distance euclidienne brute) que la paire BRET-PACA (plus forte distance euclidienne standardisée) Cette troisième solution offre donc ici une sorte de compromis entre les deux précédentes, même si elle est en réalité plus proche de la méthode standardisée que de la méthode brute.
 :::
 
 Il existe de nombreuses autres solutions permettant de transformer le petit tableau de données en d'autres matrices de dissimilarité tout aussi légitimes que les trois présentées ci-dessus. On pourrait par exemple utiliser une autre métrique telle que distance de Tchebychev qui est la magnitude absolue maximale des différences entre les coordonnées des points.
@@ -777,7 +783,8 @@ mf_layout("3.b CAH en 3 classes", frame = TRUE, arrow = FALSE, credits = "")
 ```
 
 
-::: {.alert .alert-success role="alert"}
+::: {.callout-note}
+## Commentaire
 Les trois classifications aboutissent logiquement à des regroupements différents puisqu'elles sont fondées sur des matrices de dissimilarité différentes. La région Ile-de-France ne se regroupe jamais avec les régions voisines car son score pour la liste Bardella est beaucoup plus faible et son score pour la liste Maréchal un peu plus élevé. Elle se regroupe fréquemment avec les régions de l'Ouest (Bretagne, Pays-de Loire, Aquitaine) qui se caractérisent par la faiblesse relative du vote d'extrême-droite. La région PACA se regroupe quant à elle surtout avec sa voisine d'Occitanie avec laquelle elle partage une fort vote Bardella et Maréchal. Mais elle diffère trop de la région Auvergne-Rhône-Alpes pour former un regroupement avec les régions du Nord et de l'Est. Au total, **aucune des classifications n'aboutit à une régionalisation** c'est-dire à une division de la France en trois sous-ensembles connexes de régions voisines.
 :::
 
@@ -846,7 +853,8 @@ mf_label(mapdon, var = "regi_code", cex = 1.3, col = "blue3", halo = TRUE, bg = 
 mf_layout("Graphe de voisinage", frame = TRUE, credits = "Grasland C., 2025")
 ```
 
-::: {.alert .alert-success role="alert"}
+::: {.callout-note}
+## Commentaire
 Dans les analyses de classification précédents, aucune contrainte de contiguïté spatiale n'était introduite et l'on pouvait par exemple fusionner dans une même classe la Bretagne et l'Ile-de-France qui ont des profils similaires en matière de faible vote pour les listes d'extrême-droite. Dans une analyse de régionalisation, il n'est plus possible de réunir ces deux unités spatiales sauf si on y ajoute d'autres régions les reliant telles que la Normandie ou les Pays de Loire et le Centre Val de Loire. On peut donc dire qu'**une régionalisation est une classification avec contraintes de voisinage spatial** ou, inversement, qu'**une classification est une régionalisation sans contraintes de voisinage spatial**.
 :::
 
@@ -912,7 +920,8 @@ mf_label(mapdon, var = "regi_code", cex = 1.3, col = "blue3", halo = TRUE, bg = 
 mf_layout("Plus proches voisins (k=3)", frame=T, credits = "Grasland C., 2025")
 ```
 
-::: {.alert .alert-success role="alert"}
+::: {.callout-note}
+## Commentaire
 Comme on peut le voir sur les cartes ci-dessus, il est possible de produire des régionalisations avec contrainte de voisinage qui ne s'appuient pas obligatoirement sur le critère de contiguïté et de présence d'une frontière commune. Dans le cas de la triangulation de Delaunay, il devient possible de regrouper par exemple la région PACA avec la région BOFC sans être obligé d'y inclure la région AURA. Inversement, dans le cas de la méthode des trois plus proches voisins il n'est plus possible de fusionner directement les régions AURA et NAQU bien qu'elles possèdent une frontière commune. Les résultats seront toujours des régionalisations dans la mesure où il existera bien une contrainte de voisinage. Mais le résultat fera apparaître des groupes d'unités spatiales qui semblent disjointes sur une carte mais ne le sont pas dans le graphe de voisinage choisi.
 :::
 
@@ -1002,7 +1011,8 @@ mf_map(map, type = "typo", var = "clas_man_rnk")
 mf_layout("3.b CAH-REG en 3 classes", frame = TRUE, arrow = FALSE, credits = "")
 ```
 
-::: {.alert .alert-success role="alert"}
+::: {.callout-note}
+## Commentaire
 Comme dans le cas de la classification (cf. [partie 1.3.3](#comparaison-des-classifications)) on observe tout d'abord une forte variation des résultats selon le choix de la matrice de dissimilarité. On retrouve également une tendance à l'isolement des régions IDF et PACA qui forment à nouveau du singleton puisqu'elles sont fortement différentes des autres unités spatiales et de leurs voisines en particulier. L'apport spécifique de la régionalisation consiste surtout ici à mettre en valeur le voisinage des trois régions atlantiques (BRET, PDLO et NAQU) qui se regroupent du fait de leur voisinage spatial et de leur similarité politique. Une comparaison avec les arbres de classification précédents montre logiquement des regroupements plus tardifs du fait de l'impossibilité de rassembler certaines régions non voisines. **Une régionalisation aboutit nécessairement à des regroupements moins homogènes qu'une classification du fait des contraintes spatiales qui lui sont imposées.**
 :::
 
@@ -1109,7 +1119,8 @@ ggplot(listes, aes(x = pct, y = gini, label = tete_nom, colour = type)) +
   ggtitle("Typologie des listes candidates aux élections européennes de juin 2024")
 ```
 
-::: {.alert .alert-success role="alert"}
+::: {.callout-note}
+## Commentaire
 Il existe une corrélation négative entre le score national d'une liste et sa concentration mesurée par l'indice de Gini. Les listes les plus importantes sont en général celles qui sont le mieux réparties tandis que les petites listes ont en général concentrés les suffrages dans quelques circonscriptions. Cette règle connaît toutefois des exceptions. Ainsi la liste "*Alliance rurale*" conduite par Jean Lassalle, bien implantée dans le Sud-Ouest, a obtenu un score national assez élevé (2.4%) tout en affichant un indice de concentration assez fort (0.41). Inversement, la liste du parti NPA "*Pour un Monde sans frontières ni patrons ...*" conduite par Selma Labib n'a recueilli que très peu de voix (0.16%) mais beaucoup mieux réparties dans un nombre important de circonscriptions avec un indice de concentration faible (0.16) comparable à celui des listes les plus importantes.
 :::
 
@@ -1161,7 +1172,8 @@ kable(tab_diff, digits = 1 )
 dissim <- dist.ldc(mat_vote_dep, method = "manhattan", silent = TRUE) / 2
 ```
 
-::: {.alert .alert-success role="alert"}
+::: {.callout-note collapse="true"}
+## Commentaire
 La somme des différences de vote est égale à 94.5 points de pourcentage. En divisant par deux on obtient une valeur de 47.2 qui est le pourcentage de vote qu'il faudrait modifier dans l'un ou l'autre département pour aboutir à des profils similaires. Le coefficient de divergence est compris entre 0 (votes identiques) et 100 (aucun vote commun).
 :::
 
@@ -1236,7 +1248,8 @@ mat <- mat[order(-mat$Profil), ]
 kable(mat[1:13, ], digits = 2)
 ```
 
-::: {.alert .alert-success role="alert"}
+::: {.callout-note collapse="true"}
+## Intérprétation des profils
 -   la **classe 1** est assez proche du **profil moyen** avec une légère sur-représentation des votes Bardella (+1.5) et Aubry (+0.79), associée à une sous-représentation des votes Glucksman (-0.91), Lassalle (-0.79), Hayer (-0.55) et Bellamy (-0.32).
 -   la **classe 2** est caractérisée par la **très forte sur-représentation du vote d'extrême droite** pour Bardella (+7.5), Maréchal (+0.38) ou Philippot (+0.05) ainsi que le parti animaliste (+0.2) associé à une sous-représentation des autres partis, en particulier de Glucksmann (-2.78) et Toussaint.
 -   la **classe 3** sur-représente les votes des **partis centristes**, qu'il s'agisse du centre-gauche (Hayer : +2.56), du centre-droit (Glucksman : +2.01) ou des écologistes (Toussaint : +1.15) et elle sous-représente les partis d'extrême-droite mais aussi d'extrême gauche.
@@ -1320,7 +1333,8 @@ mf_map(map_border_dep,
 mf_layout(title = "Cartographie des discontinuités", credits = "Grasland C., 2025")
 ```
 
-::: {.alert .alert-success role="alert"}
+::: {.callout-note}
+## Commentaire
 Les discontinuités les plus remarquables sont celles qui séparent les départements d'Ile-de-France du reste du Bassin parisien (ex. dissimilarité de 26 points entre Yvelines et Eure) mais aussi les départements franciliens entre eux (ex. dissimilarité de 33 points entre Seine-Saint-Denis et Paris). On retrouve également de très fortes différences entre les départements qui abritent les grandes métropoles de province (Lyon, Toulouse, Nantes, Lille, ...) et leurs voisins. Mais il apparaît également des discontinuités entre certains départements plus ruraux. A l'inverse, on repère des groupes de départements peu différents les uns des autres dans les Alpes, le sud du Bassin Parisien ou le Centre-Ouest. La carte des discontinuités permet donc d'anticiper les regroupements les plus probables qui vont intervenir au cours de l'étape de régionalisation.
 :::
 
@@ -1350,7 +1364,8 @@ barplot(rev(regio$height)[1:20],
         cex.names = 0.4)
 ```
 
-::: {.alert .alert-success role="alert"}
+::: {.callout-note}
+## Choix d'une partition
 L'arbre de classification et l'indice de hiérarchie des nœuds mettent tout d'abord en valeur les partitions en 2, 3 ou 4 classes qui se détachent très clairement des regroupements ultérieurs. On observe toutefois que la régionalisation en deux classes est moins efficace que la partition en trois classes ce qui peut surprendre un utilisateur habitué à utiliser des méthodes fondées sur la distance euclidienne au carré et la variance. Ce résultat est en fait logique dans la mesure où nous avons utilisé une métrique non euclidienne [@guénard2022] et surtout une contrainte de contiguïté [@randriamihamison2021]. Dans notre exemple, il signale que le premier niveau de découpage de la France en régions électorales n'est pas une opposition Nord-Est/Sud-Ouest mais un découpage en trois entités qui isole la région Ile-de-France. Quant au découpage en quatre régions, il met en valeur à l'intérieur de la France du nord-est le cas de la partie nord et est du bassin parisien qui est singulièrement différente du reste de la France du Nord-Est. Au delà de cette partition en quatre classes, on observe une suite de partitions de niveaux voisins jusqu'au 9e nœuds de l'arbre où apparaît une discontinuité nette, ce qui incite à retenir une partition en 10 régions. Le niveau de dissimilarité de ce découpage en 10 régions sera approximativement le même que celui que nous avions utilisé précédemment pour réaliser une classification comportant cinq classes. Ce qui confirme qu'une régionalisation est par définition moins efficace qu'une classification puisqu'elle doit comporter deux fois plus de groupes pour aboutir au même niveau d'homogénéité, du moins dans le cas du jeu de données utilisé ici.
 :::
 
@@ -1474,7 +1489,8 @@ kable(mat[1:13, ], digits = 2)
 
 
 
-::: {.alert .alert-success role="alert"}
+::: {.callout-note collapse="true"}
+## Intérprétation des profils 
 
 **La région Nord-Est (NE)** se caractérisent par une sur-représentation générale des votes pour les listes de droite (Bellamy) ou d'extrême-droite (Bardella, Maréchal) dans trois de ses composantes sous-régionales, auxquelles il faut ajouter une enclave.
 
@@ -1534,7 +1550,7 @@ Une carte publiée dans Cybergeo [@CybergeoConversation2022] à propos du premie
 knitr::include_graphics("figures/carte-election-presidentielle-2022.png")
 ```
 
-::: {.alert .alert-success role="alert"}
+::: {.callout-note}
 L'auteur précise que la carte combine en fait des variables de niveau (structures des votes en 2022) et des variables d'évolution (entre les élections de 2017 et 2022) :
 
 > Cette carte a été construite à l’aide d’une Classification Ascendante Hiérarchique. Elle synthétise 9 variables décrivant la structure du vote en 2022 (abstention, vote blanc, vote pour chaque famille politique) et 9 variables similaires décrivant l’évolution du vote entre 2017 et 2022. Ces variables sont toutes standardisées et décrivent donc pour les 9 premières des écarts par rapport au vote de l’ensemble des intercommunalités, pour les 9 suivantes des variations positives ou négatives par rapport à l’évolution constatée au niveau de l’ensemble des intercommunalités. Source : Finance O., 2022, [Cybergeo Conversation](https://cybergeo.hypotheses.org/1199)
@@ -1753,7 +1769,8 @@ mat <- mat[order(-mat$Profil), ]
 kable(mat[1:13, ], digits = 2)
 ```
 
-::: {.alert .alert-success role="alert"}
+::: {.callout-note collapse="true"}
+## Intérprétation des profils
 -   **Les espaces métropolitains centraux (Metrop. 1)** votent beaucoup moins pour le rassemblement National (Bardella) et les partis à implantation régionale (Lassalle, Deffontaines), privilégiant les partis traditionnels de gouvernement (Hayer, Glucksman, Bellamy) ainsi que les écologistes (Toussaint), LFI (Aubry) ou la liste d'extrême-droite de Marechal.
 -   **Les espaces métropolitains périphériques (Metrop. 2)** correspondent aux zones d'implantation privilégiée de la France Insoumise (Aubry), associée à une surreprésentation légère des votes communistes ou écologistes.
 -   **Les espaces périphériques intégrés (Periph. 1)** ont un profil moyen avec une légère sur-représentation des votes pour les partis de centre-droit ou de centre-gauche ainsi que des listes régionalistes (Lassalle).
@@ -2336,8 +2353,7 @@ mf_layout(
 ## Informations de session {.unnumbered}
 
 ```{r session_info, echo=FALSE}
-kableExtra::kable_styling(knitr::kable(rzine::sessionRzine()[[1]], row.names = F))
-kableExtra::kable_styling(knitr::kable(rzine::sessionRzine()[[2]], row.names = F))
+sessioninfo::session_info(pkgs = c(NULL, "attached", NULL)[1])
 ```
 
 ::: {#lof}
