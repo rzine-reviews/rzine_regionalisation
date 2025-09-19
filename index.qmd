@@ -786,7 +786,7 @@ Les trois classifications aboutissent logiquement à des regroupements différen
 La fonction `constr.hclust()` du package `adespatial` permet de réaliser une **classification ascendante hiérarchique sous contrainte de contiguïté** en suivant un algorithme strictement comparable à celui d'une classification. La seule différence réside dans le fait d'éliminer des solutions en interdisant le regroupement d'unités spatiales si elles ne sont pas voisines ou, plus précisément connexes. 
 
 
-### Graphe de contiguiïté
+### Graphe de contiguïté
 
 Pour bien comprendre la différence entre classification et régionalisation, il est intéressant de visualiser sur une carte les matrices de contiguïté associés à chacune des deux méthodes.
 
