@@ -354,12 +354,12 @@ don <- don_reg  |>
 
 ```
 
-On obtient le tableau suivant :
+On obtient la part des suffrages exprimés pour les listes Bardella et Maréchal aux élections européennes de 2024, par région :
 
 ```{r data1_percentage_table}
 #| echo: false
 
-kable(don, caption = "Part des suffrages exprimés pour les listes Bardella et Maréchal aux élections européennes de 2024 par région.", digits = 1)
+kable(don, caption = "", digits = 1)
 
 ```
 
