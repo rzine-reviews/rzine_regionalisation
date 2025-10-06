@@ -328,6 +328,11 @@ mf_theme(x = "default")
 ```
 
 
+#### C. Téléchargement {.unnumbered}
+
+Les données utilisées dans cet article, annexes incluses, sont mises à disposition dans une archive téléchargeable à [**ce lien**](https://rzine.fr/docs/20251001_classification_regionalisation/data.zip).
+
+
 # Échelle régionale : principes de base
 
 Afin de bien comprendre la différence entre classification et régionalisation et l'importance de la pondération, nous allons commencer par un exemple très simple portant sur la distribution des votes pour les deux principales listes d'extrême droite dans les 12 régions de France métropolitaine.

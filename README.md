@@ -11,7 +11,7 @@ Jean Rivière (UMR Espaces et sociétés, Institut de géographie et d’aménag
 **Résumé :**  
 La combinaison des méthodes de classification et de régionalisation est facilitée par le développement d’une nouvelle fonction du package `adespatial` qui permet de regrouper les unités spatiales les plus ressemblantes en respectant la contrainte de connexité. Mise au point par des écologues canadiens, cette méthode de classification ascendante hiérarchique avec contrainte de voisinage est beaucoup plus simple d’emploi et efficace que les autres méthodes de régionalisation disponibles actuellement dans des packages tels que `rgeoda`. Elle s’appuie sur un corpus théorique d’analyse spatiale de la biodiversité des espaces animale ou végétale que l’on peut tenter de transposer à de nombreux problèmes géographiques, mais en adoptant une posture critique dans le cas de thématiques éloignées des questions de biologie végétale. Nous prenons ici comme exemple l’analyse du résultat des élections européennes de 2024 en France métropolitaine à trois niveaux d’agrégation : régions administratives, départements et circonscriptions législatives. Nous comparons à chaque échelle les résultats des méthodes de régionalisation et classification, et nous discutons leurs apports respectifs pour la compréhension des phénomènes de géographie électorale.
 
-Pour le consulter, cliquez [**ici**](https://rzine-reviews.github.io/rzine_regionalisation/)
+Pour le consulter, cliquez [**ici**](https://rzine.fr/docs/20251001_classification_regionalisation/index.html)
 
 <br/>  
 
